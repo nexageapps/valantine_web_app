@@ -172,16 +172,19 @@
       border: 2px solid transparent;
       border-radius: var(--radius-sm);
       outline: none;
-      transition: all var(--transition-normal);
+      transition: border-color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-normal);
       box-shadow: var(--shadow-sm);
       touch-action: manipulation; /* Optimize touch interactions */
+      /* Use GPU acceleration for better performance */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     .form-input:focus,
     .form-textarea:focus {
       border-color: var(--color-primary);
       box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       outline: 2px solid var(--color-primary);
       outline-offset: 2px;
     }
@@ -228,20 +231,23 @@
       border-radius: var(--radius-md);
       cursor: pointer;
       outline: none;
-      transition: all var(--transition-normal);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
       box-shadow: var(--shadow-md);
       min-height: 44px; /* Touch-friendly minimum */
       touch-action: manipulation; /* Optimize touch interactions, remove double-tap delay */
       -webkit-tap-highlight-color: rgba(255, 107, 157, 0.3); /* Touch feedback on iOS */
+      /* Use GPU acceleration for better performance */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     .btn:hover {
-      transform: translateY(-3px);
+      transform: translateY(-3px) translateZ(0);
       box-shadow: var(--shadow-lg);
     }
     
     .btn:active {
-      transform: translateY(-1px);
+      transform: translateY(-1px) translateZ(0);
       box-shadow: var(--shadow-sm);
     }
     
@@ -291,23 +297,23 @@
       color: var(--color-secondary);
       text-shadow: 0 4px 20px rgba(196, 69, 105, 0.3);
       animation: countdown-pulse 1s ease-in-out;
-      will-change: transform, opacity;
       /* Use GPU acceleration for better performance */
       transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
-    /* Countdown animation with scale and fade effects */
+    /* Countdown animation with scale and fade effects - uses transform for GPU acceleration */
     @keyframes countdown-pulse {
       0% {
-        transform: scale(0.5);
+        transform: scale(0.5) translateZ(0);
         opacity: 0;
       }
       50% {
-        transform: scale(1.2);
+        transform: scale(1.2) translateZ(0);
         opacity: 1;
       }
       100% {
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
         opacity: 1;
       }
     }
@@ -425,7 +431,7 @@
     }
     
     .btn-yes:hover {
-      transform: translateY(-4px) scale(1.05);
+      transform: translateY(-4px) scale(1.05) translateZ(0);
       box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
     }
     
@@ -436,12 +442,15 @@
       padding: var(--spacing-sm) var(--spacing-lg);
       min-width: 100px;
       position: relative;
-      transition: all var(--transition-fast);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
       touch-action: manipulation; /* Optimize touch interactions */
+      /* Use GPU acceleration for better performance */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     .btn-no:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) translateZ(0);
       box-shadow: var(--shadow-md);
     }
     
@@ -493,9 +502,9 @@
       margin-top: var(--spacing-xl);
       padding-top: var(--spacing-lg);
       animation: success-appear 0.5s ease-out;
-      will-change: transform, opacity;
       /* Use GPU acceleration for better performance */
       transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     .success-message {
@@ -514,14 +523,14 @@
     
     @keyframes success-appear {
       0% {
-        transform: scale(0.8);
+        transform: scale(0.8) translateZ(0);
         opacity: 0;
       }
       50% {
-        transform: scale(1.1);
+        transform: scale(1.1) translateZ(0);
       }
       100% {
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
         opacity: 1;
       }
     }
@@ -573,7 +582,7 @@
     }
     
     .btn-share:hover {
-      transform: translateY(-3px) scale(1.02);
+      transform: translateY(-3px) scale(1.02) translateZ(0);
       box-shadow: 0 6px 20px rgba(0, 184, 148, 0.3);
     }
     
@@ -772,17 +781,17 @@
       backface-visibility: hidden;
     }
     
-    /* Heart floats upward and fades out */
+    /* Heart floats upward and fades out - uses transform for GPU acceleration */
     @keyframes float-up {
       0% {
-        transform: translateY(0) scale(0.5);
+        transform: translateY(0) scale(0.5) translateZ(0);
         opacity: 0;
       }
       10% {
         opacity: 1;
       }
       100% {
-        transform: translateY(-100vh) scale(1);
+        transform: translateY(-100vh) scale(1) translateZ(0);
         opacity: 0;
       }
     }
@@ -804,14 +813,14 @@
       backface-visibility: hidden;
     }
     
-    /* Confetti falls from top with rotation */
+    /* Confetti falls from top with rotation - uses transform for GPU acceleration */
     @keyframes confetti-fall {
       0% {
-        transform: translateY(-10px) rotate(0deg);
+        transform: translateY(-10px) rotate(0deg) translateZ(0);
         opacity: 1;
       }
       100% {
-        transform: translateY(100vh) rotate(720deg);
+        transform: translateY(100vh) rotate(720deg) translateZ(0);
         opacity: 0;
       }
     }
@@ -1246,8 +1255,12 @@
     
     /**
      * Transitions from input screen to countdown screen
+     * Cleans up any active animations and intervals for better performance
      */
     function transitionToCountdown() {
+      // Clean up any active animations before transitioning
+      cleanupAnimations();
+      
       // Hide input screen
       const inputScreen = document.getElementById('input-screen');
       inputScreen.classList.remove('active');
@@ -1364,6 +1377,7 @@
     /**
      * Transitions from countdown screen to reveal screen
      * Displays the recipient's name and message with typewriter effect
+     * Cleans up countdown animations for better performance
      */
     function transitionToReveal() {
       // Hide countdown screen
@@ -1428,8 +1442,9 @@
     
     /**
      * Creates floating heart animations on the screen
-     * Generates 20-30 hearts at random positions that float upward and fade out
+     * Generates 15-20 hearts at random positions that float upward and fade out
      * Hearts are automatically removed after animation completes to prevent memory leaks
+     * Optimized for performance with limited number of simultaneous elements
      */
     function createFloatingHearts() {
       // Clear any existing heart interval to prevent duplicates
@@ -1438,9 +1453,9 @@
         heartInterval = null;
       }
       
-      // Limit to 25 hearts for performance
-      // Too many hearts can slow down the animation on mobile devices
-      const numberOfHearts = 25;
+      // Limit to 15 hearts for better performance (reduced from 25)
+      // Fewer hearts reduces DOM manipulation and improves animation smoothness
+      const numberOfHearts = 15;
       
       // Heart emoji variations for visual variety
       // Using different heart emojis makes the animation more interesting
@@ -1480,6 +1495,9 @@
         const randomDelay = Math.random() * 0.5;
         heart.style.animationDelay = `${randomDelay}s`;
         
+        // Add will-change hint for better performance during animation
+        heart.style.willChange = 'transform, opacity';
+        
         // Add heart to the document body
         document.body.appendChild(heart);
         
@@ -1487,18 +1505,21 @@
         // This is important for memory management - prevents DOM bloat
         setTimeout(() => {
           if (heart.parentNode) {
+            // Remove will-change before removing element to free up resources
+            heart.style.willChange = 'auto';
             heart.remove();
           }
         }, (4 + randomDelay) * 1000);
         
         heartsCreated++;
-      }, 200); // Create a new heart every 200ms for smooth, continuous effect
+      }, 300); // Create a new heart every 300ms (increased from 200ms for better performance)
     }
     
     /**
      * Creates confetti animation on the screen
      * Generates confetti particles with random colors that fall from the top
      * Confetti particles rotate as they fall and are automatically removed after animation completes
+     * Optimized for performance with limited number of simultaneous elements
      */
     function createConfetti() {
       // Clear any existing confetti interval to prevent duplicates
@@ -1507,9 +1528,9 @@
         confettiInterval = null;
       }
       
-      // Limit to 30 confetti pieces for performance
+      // Limit to 20 confetti pieces for better performance (reduced from 30)
       // Balance between visual impact and smooth animation
-      const numberOfConfetti = 30;
+      const numberOfConfetti = 20;
       
       // Confetti color palette - romantic colors that match the app theme
       // Using a variety of pinks, roses, and gold for a festive look
@@ -1564,6 +1585,9 @@
         confetti.style.width = `${randomSize}px`;
         confetti.style.height = `${randomSize}px`;
         
+        // Add will-change hint for better performance during animation
+        confetti.style.willChange = 'transform, opacity';
+        
         // Add confetti to the document body
         document.body.appendChild(confetti);
         
@@ -1571,17 +1595,20 @@
         // Important for memory management - prevents DOM bloat
         setTimeout(() => {
           if (confetti.parentNode) {
+            // Remove will-change before removing element to free up resources
+            confetti.style.willChange = 'auto';
             confetti.remove();
           }
         }, (3 + randomDelay) * 1000);
         
         confettiCreated++;
-      }, 100); // Create a new confetti piece every 100ms for continuous effect
+      }, 150); // Create a new confetti piece every 150ms (increased from 100ms for better performance)
     }
     
     /**
      * Cleans up all active intervals and animations
      * This prevents memory leaks and ensures smooth performance
+     * Should be called when transitioning between screens or when effects are no longer needed
      */
     function cleanupAnimations() {
       // Clear heart interval if active
@@ -1600,6 +1627,8 @@
       const hearts = document.querySelectorAll('.floating-heart');
       hearts.forEach(heart => {
         if (heart.parentNode) {
+          // Remove will-change before removing element
+          heart.style.willChange = 'auto';
           heart.remove();
         }
       });
@@ -1608,6 +1637,8 @@
       const confettiElements = document.querySelectorAll('.confetti');
       confettiElements.forEach(confetti => {
         if (confetti.parentNode) {
+          // Remove will-change before removing element
+          confetti.style.willChange = 'auto';
           confetti.remove();
         }
       });
@@ -1681,6 +1712,7 @@
      * Handles No button hover/touch interaction
      * Moves the button to a new random position on the screen
      * This creates the playful evasive behavior that makes the "No" button hard to click
+     * Optimized for performance with efficient will-change usage
      * @param {Event} event - The mouseenter or touchstart event
      */
     function handleNoButtonHover(event) {
@@ -1709,6 +1741,9 @@
       // Calculate new random position that keeps button within viewport
       const newPosition = getRandomPosition(buttonWidth, buttonHeight, viewportWidth, viewportHeight);
       
+      // Add will-change hint before animation for better performance
+      noBtn.style.willChange = 'left, top';
+      
       // Move button to new position using fixed positioning
       // Fixed positioning allows the button to move anywhere on the screen
       // regardless of its parent container
@@ -1716,12 +1751,12 @@
       noBtn.style.left = `${newPosition.x}px`;
       noBtn.style.top = `${newPosition.y}px`;
       
-      // Use CSS transform for smoother animation (GPU accelerated)
-      // This provides better performance than animating left/top properties
+      // Use CSS transition for smooth animation
+      // This provides better performance than animating via JavaScript
       noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
-      noBtn.style.willChange = 'left, top';
       
       // Remove will-change after animation completes to free up resources
+      // This is important for performance - will-change should only be active during animations
       setTimeout(() => {
         noBtn.style.willChange = 'auto';
       }, 300);
