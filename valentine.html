@@ -1008,14 +1008,10 @@
     // ===================================
     
     /**
-     * Handles form submission with validation
-     * @param {Event} event - The form submit event
+     * Validates form inputs and returns the values if valid
+     * @returns {Object|null} - Object with name and message, or null if invalid
      */
-    function handleFormSubmit(event) {
-      // Prevent default form submission
-      event.preventDefault();
-      
-      // Get form values
+    function validateAndGetFormValues() {
       const nameInput = document.getElementById('name-input');
       const messageInput = document.getElementById('message-input');
       const nameGroup = document.getElementById('name-group');
@@ -1028,15 +1024,67 @@
         // Show error state
         nameGroup.classList.add('error');
         nameInput.focus();
-        return; // Prevent form submission
+        return null;
       }
       
       // Remove error state if validation passes
       nameGroup.classList.remove('error');
       
+      return {
+        name: name.trim(),
+        message: message.trim()
+      };
+    }
+    
+    /**
+     * Handles Generate Link button click
+     * Generates and displays the shareable link without showing the preview
+     */
+    function handleGenerateLinkClick() {
+      const formValues = validateAndGetFormValues();
+      
+      if (!formValues) {
+        return; // Validation failed
+      }
+      
+      // Store values
+      recipientName = formValues.name;
+      customMessage = formValues.message;
+      
+      // Generate the share URL
+      const shareURL = generateShareURL(recipientName, customMessage);
+      
+      // Display the link section
+      const linkSection = document.getElementById('link-section');
+      const generatedLinkInput = document.getElementById('generated-link');
+      
+      generatedLinkInput.value = shareURL;
+      linkSection.classList.remove('hidden');
+      
+      // Scroll to the link section smoothly
+      linkSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      // Store the share URL for copy and WhatsApp functions
+      window.currentGeneratedURL = shareURL;
+    }
+    
+    /**
+     * Handles form submission with validation
+     * @param {Event} event - The form submit event
+     */
+    function handleFormSubmit(event) {
+      // Prevent default form submission
+      event.preventDefault();
+      
+      const formValues = validateAndGetFormValues();
+      
+      if (!formValues) {
+        return; // Validation failed
+      }
+      
       // Store name and message in global variables for later use
-      recipientName = name.trim();
-      customMessage = message.trim();
+      recipientName = formValues.name;
+      customMessage = formValues.message;
       
       // Transition to countdown screen
       transitionToCountdown();
@@ -1412,6 +1460,97 @@
     }
     
     /**
+     * Handles Copy Generated Link button click
+     * Copies the generated share URL to clipboard
+     */
+    function handleCopyGeneratedLinkClick() {
+      const shareURL = window.currentGeneratedURL;
+      const confirmationElement = document.getElementById('copy-generated-confirmation');
+      
+      if (shareURL) {
+        copyToClipboardWithConfirmation(shareURL, confirmationElement);
+      }
+    }
+    
+    /**
+     * Handles WhatsApp Generated button click
+     * Opens WhatsApp with the generated share URL
+     */
+    function handleWhatsAppGeneratedClick() {
+      const shareURL = window.currentGeneratedURL;
+      
+      if (shareURL) {
+        shareOnWhatsApp(shareURL);
+      }
+    }
+    
+    /**
+     * Copies text to the clipboard and shows confirmation in specified element
+     * @param {string} text - The text to copy to clipboard
+     * @param {HTMLElement} confirmationElement - The element to show confirmation in
+     */
+    async function copyToClipboardWithConfirmation(text, confirmationElement) {
+      try {
+        // Check if Clipboard API is supported
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          // Use modern Clipboard API
+          await navigator.clipboard.writeText(text);
+          
+          // Show confirmation message
+          confirmationElement.classList.remove('hidden');
+          
+          // Hide confirmation message after 2 seconds
+          setTimeout(() => {
+            confirmationElement.classList.add('hidden');
+          }, 2000);
+        } else {
+          // Fallback for browsers without Clipboard API
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          textarea.style.top = '0';
+          textarea.setAttribute('readonly', '');
+          
+          document.body.appendChild(textarea);
+          textarea.select();
+          textarea.setSelectionRange(0, text.length);
+          
+          const successful = document.execCommand('copy');
+          document.body.removeChild(textarea);
+          
+          if (successful) {
+            confirmationElement.classList.remove('hidden');
+            setTimeout(() => {
+              confirmationElement.classList.add('hidden');
+            }, 2000);
+          } else {
+            confirmationElement.textContent = '❌ Please copy the link manually';
+            confirmationElement.style.color = 'var(--color-error)';
+            confirmationElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+              confirmationElement.classList.add('hidden');
+              confirmationElement.textContent = '✓ Link copied to clipboard!';
+              confirmationElement.style.color = 'var(--color-success)';
+            }, 3000);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to copy to clipboard:', error);
+        confirmationElement.textContent = '❌ Failed to copy. Please try again.';
+        confirmationElement.style.color = 'var(--color-error)';
+        confirmationElement.classList.remove('hidden');
+        
+        setTimeout(() => {
+          confirmationElement.classList.add('hidden');
+          confirmationElement.textContent = '✓ Link copied to clipboard!';
+          confirmationElement.style.color = 'var(--color-success)';
+        }, 3000);
+      }
+    }
+    
+    /**
      * Copies text to the clipboard using the Clipboard API
      * Shows confirmation message after successful copy
      * Implements fallback for browsers without Clipboard API support
@@ -1419,6 +1558,8 @@
      */
     async function copyToClipboard(text) {
       const confirmationElement = document.getElementById('copy-confirmation');
+      await copyToClipboardWithConfirmation(text, confirmationElement);
+    }
       
       try {
         // Check if Clipboard API is supported
@@ -1597,6 +1738,10 @@
       const form = document.getElementById('valentine-form');
       form.addEventListener('submit', handleFormSubmit);
       
+      // Bind Generate Link button click event
+      const generateLinkBtn = document.getElementById('generate-link-btn');
+      generateLinkBtn.addEventListener('click', handleGenerateLinkClick);
+      
       // Bind input event to clear error on typing
       const nameInput = document.getElementById('name-input');
       nameInput.addEventListener('input', handleNameInput);
@@ -1612,13 +1757,21 @@
       noBtn.addEventListener('mouseenter', handleNoButtonHover);
       noBtn.addEventListener('touchstart', handleNoButtonHover);
       
-      // Bind Copy Link button click event
+      // Bind Copy Link button click event (in reveal screen)
       const copyLinkBtn = document.getElementById('copy-link-btn');
       copyLinkBtn.addEventListener('click', handleCopyLinkClick);
       
-      // Bind WhatsApp button click event
+      // Bind WhatsApp button click event (in reveal screen)
       const whatsappBtn = document.getElementById('whatsapp-btn');
       whatsappBtn.addEventListener('click', handleWhatsAppClick);
+      
+      // Bind Copy Generated Link button click event (in input screen)
+      const copyGeneratedLinkBtn = document.getElementById('copy-generated-link-btn');
+      copyGeneratedLinkBtn.addEventListener('click', handleCopyGeneratedLinkClick);
+      
+      // Bind WhatsApp Generated button click event (in input screen)
+      const whatsappGeneratedBtn = document.getElementById('whatsapp-generated-btn');
+      whatsappGeneratedBtn.addEventListener('click', handleWhatsAppGeneratedClick);
     });
   </script>
   
