@@ -291,6 +291,9 @@
       color: var(--color-secondary);
       text-shadow: 0 4px 20px rgba(196, 69, 105, 0.3);
       animation: countdown-pulse 1s ease-in-out;
+      will-change: transform, opacity;
+      /* Use GPU acceleration for better performance */
+      transform: translateZ(0);
     }
     
     /* Countdown animation with scale and fade effects */
@@ -761,6 +764,9 @@
       z-index: 5;
       animation: float-up 4s ease-in forwards;
       will-change: transform, opacity;
+      /* Use GPU acceleration for better performance */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     /* Heart floats upward and fades out */
@@ -790,6 +796,9 @@
       z-index: 5;
       animation: confetti-fall 3s ease-in forwards;
       will-change: transform, opacity;
+      /* Use GPU acceleration for better performance */
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     /* Confetti falls from top with rotation */
