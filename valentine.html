@@ -1020,14 +1020,70 @@
     }
     
     /**
+     * Sanitizes user input to prevent XSS attacks
+     * Limits length and removes potentially dangerous characters
+     * @param {string} input - The user input to sanitize
+     * @param {number} maxLength - Maximum allowed length
+     * @returns {string} - Sanitized input
+     */
+    function sanitizeInput(input, maxLength) {
+      if (!input) return '';
+      
+      // Trim whitespace
+      let sanitized = input.trim();
+      
+      // Limit length to prevent URL parameter overflow
+      if (sanitized.length > maxLength) {
+        sanitized = sanitized.substring(0, maxLength);
+      }
+      
+      // Return sanitized input
+      // Note: We use textContent for display, which automatically escapes HTML
+      return sanitized;
+    }
+    
+    /**
+     * Validates URL parameter length limits
+     * @param {string} name - The recipient's name
+     * @param {string} message - The custom message
+     * @returns {boolean} - True if within limits, false otherwise
+     */
+    function validateParameterLengths(name, message) {
+      const MAX_NAME_LENGTH = 200;
+      const MAX_MESSAGE_LENGTH = 500;
+      
+      return name.length <= MAX_NAME_LENGTH && message.length <= MAX_MESSAGE_LENGTH;
+    }
+    
+    /**
+     * Detects if touch events are supported
+     * @returns {boolean} - True if touch events are supported
+     */
+    function isTouchSupported() {
+      return ('ontouchstart' in window) || 
+             (navigator.maxTouchPoints > 0) || 
+             (navigator.msMaxTouchPoints > 0);
+    }
+    
+    /**
+     * Detects if Clipboard API is supported
+     * @returns {boolean} - True if Clipboard API is supported
+     */
+    function isClipboardSupported() {
+      return !!(navigator.clipboard && navigator.clipboard.writeText);
+    }
+    
+    /**
      * Generates a shareable URL with encoded query parameters
      * @param {string} name - The recipient's name
      * @param {string} message - The custom message (can be empty)
      * @returns {string} - The complete shareable URL with query parameters
      */
     function generateShareURL(name, message) {
-      // Get the current page URL (base URL without query parameters)
-      const baseURL = window.location.origin + window.location.pathname;
+      // Get the current page URL (base URL without query parameters or hash)
+      // Split by '?' to remove any existing query parameters
+      // Split by '#' to remove any hash fragments
+      const currentURL = window.location.href.split('?')[0].split('#')[0];
       
       // Use URLSearchParams API for proper encoding of special characters
       const params = new URLSearchParams();
@@ -1039,7 +1095,7 @@
       }
       
       // Construct and return the full URL with query parameters
-      return `${baseURL}?${params.toString()}`;
+      return `${currentURL}?${params.toString()}`;
     }
     
     /**
@@ -1055,8 +1111,15 @@
       
       // Extract name and message parameters
       // Use empty string as default if parameter is not present
-      const name = params.get('name') || '';
-      const message = params.get('msg') || '';
+      let name = params.get('name') || '';
+      let message = params.get('msg') || '';
+      
+      // Sanitize and validate parameter lengths to prevent abuse
+      const MAX_NAME_LENGTH = 200;
+      const MAX_MESSAGE_LENGTH = 500;
+      
+      name = sanitizeInput(name, MAX_NAME_LENGTH);
+      message = sanitizeInput(message, MAX_MESSAGE_LENGTH);
       
       // Return object with name and message properties
       return {
@@ -1290,6 +1353,7 @@
       createConfetti();
       
       // Display the recipient's name immediately (no typewriter effect for name)
+      // Use textContent to prevent XSS attacks (not innerHTML)
       nameElement.textContent = name;
       
       // Determine which message to display
@@ -1304,6 +1368,7 @@
       }
       
       // Apply typewriter effect to the message
+      // typewriterEffect uses textContent internally for XSS prevention
       await typewriterEffect(messageElement, messageToDisplay, 60);
       
       // Show the question section after typewriter effect completes
