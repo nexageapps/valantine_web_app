@@ -4,9 +4,11 @@ A playful, interactive Valentine's Day web application that lets you create pers
 
 ## Demo
 
-https://github.com/nexageapps/valantine_web_app/blob/main/ValantineDemoV3.mov
+![Valentine App Demo](https://github.com/nexageapps/valantine_web_app/blob/main/ValantineDemoV3.gif)
 
 Watch the full Valentine experience in action - from link generation to the playful "No" button and celebration animations!
+
+[View Full Video](https://github.com/nexageapps/valantine_web_app/blob/main/ValantineDemoV3.mov)
 
 ## Features
 
