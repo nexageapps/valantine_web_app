@@ -1628,17 +1628,20 @@
     
     /**
      * Copies text to the clipboard and shows confirmation in specified element
+     * Handles Clipboard API not supported with manual copy fallback
      * @param {string} text - The text to copy to clipboard
      * @param {HTMLElement} confirmationElement - The element to show confirmation in
      */
     async function copyToClipboardWithConfirmation(text, confirmationElement) {
       try {
         // Check if Clipboard API is supported
-        if (navigator.clipboard && navigator.clipboard.writeText) {
+        if (isClipboardSupported()) {
           // Use modern Clipboard API
           await navigator.clipboard.writeText(text);
           
           // Show confirmation message
+          confirmationElement.textContent = '✓ Link copied to clipboard!';
+          confirmationElement.style.color = 'var(--color-success)';
           confirmationElement.classList.remove('hidden');
           
           // Hide confirmation message after 2 seconds
@@ -1647,6 +1650,7 @@
           }, 2000);
         } else {
           // Fallback for browsers without Clipboard API
+          // Try using deprecated execCommand as fallback
           const textarea = document.createElement('textarea');
           textarea.value = text;
           textarea.style.position = 'fixed';
@@ -1658,37 +1662,64 @@
           textarea.select();
           textarea.setSelectionRange(0, text.length);
           
-          const successful = document.execCommand('copy');
+          let successful = false;
+          try {
+            successful = document.execCommand('copy');
+          } catch (err) {
+            console.error('execCommand copy failed:', err);
+          }
+          
           document.body.removeChild(textarea);
           
           if (successful) {
-            confirmationElement.classList.remove('hidden');
-            setTimeout(() => {
-              confirmationElement.classList.add('hidden');
-            }, 2000);
-          } else {
-            confirmationElement.textContent = '❌ Please copy the link manually';
-            confirmationElement.style.color = 'var(--color-error)';
+            // Copy succeeded with fallback method
+            confirmationElement.textContent = '✓ Link copied to clipboard!';
+            confirmationElement.style.color = 'var(--color-success)';
             confirmationElement.classList.remove('hidden');
             
             setTimeout(() => {
               confirmationElement.classList.add('hidden');
-              confirmationElement.textContent = '✓ Link copied to clipboard!';
-              confirmationElement.style.color = 'var(--color-success)';
-            }, 3000);
+            }, 2000);
+          } else {
+            // Both methods failed - show manual copy instruction
+            confirmationElement.textContent = '📋 Please copy the link manually (select and Ctrl+C)';
+            confirmationElement.style.color = 'var(--color-text-dark)';
+            confirmationElement.classList.remove('hidden');
+            
+            // Select the link input for manual copying
+            const linkInput = document.getElementById('generated-link') || 
+                            document.querySelector('input[readonly]');
+            if (linkInput) {
+              linkInput.focus();
+              linkInput.select();
+            }
+            
+            // Keep message visible longer for manual copy
+            setTimeout(() => {
+              confirmationElement.classList.add('hidden');
+            }, 5000);
           }
         }
       } catch (error) {
         console.error('Failed to copy to clipboard:', error);
-        confirmationElement.textContent = '❌ Failed to copy. Please try again.';
-        confirmationElement.style.color = 'var(--color-error)';
+        
+        // Show error message with manual copy instruction
+        confirmationElement.textContent = '📋 Please copy the link manually (select and Ctrl+C)';
+        confirmationElement.style.color = 'var(--color-text-dark)';
         confirmationElement.classList.remove('hidden');
         
+        // Select the link input for manual copying
+        const linkInput = document.getElementById('generated-link') || 
+                        document.querySelector('input[readonly]');
+        if (linkInput) {
+          linkInput.focus();
+          linkInput.select();
+        }
+        
+        // Keep message visible longer for manual copy
         setTimeout(() => {
           confirmationElement.classList.add('hidden');
-          confirmationElement.textContent = '✓ Link copied to clipboard!';
-          confirmationElement.style.color = 'var(--color-success)';
-        }, 3000);
+        }, 5000);
       }
     }
     
@@ -1820,8 +1851,14 @@
       // Keyboard: focus event (triggers when button receives keyboard focus)
       const noBtn = document.getElementById('no-btn');
       noBtn.addEventListener('mouseenter', handleNoButtonHover);
-      // Note: touchstart must NOT be passive because we call preventDefault
-      noBtn.addEventListener('touchstart', handleNoButtonHover, { passive: false });
+      
+      // Only add touch event listener if touch is supported
+      // This provides graceful fallback for devices without touch support
+      if (isTouchSupported()) {
+        // Note: touchstart must NOT be passive because we call preventDefault
+        noBtn.addEventListener('touchstart', handleNoButtonHover, { passive: false });
+      }
+      
       noBtn.addEventListener('focus', handleNoButtonFocus);
       
       // Bind Copy Link button click event (in reveal screen)
