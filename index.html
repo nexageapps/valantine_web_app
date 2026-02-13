@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 Will You Be My Valentine? 💕</title>
+    <style>
+        /* ========== BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #ffd4e5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* ========== CONTAINER STYLES ========== */
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ========== HEADER STYLES ========== */
+        h1 {
+            color: #ff1493;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ff69b4;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* ========== FORM STYLES ========== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #ff1493;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffb6c1;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ff69b4;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        /* ========== BUTTON STYLES ========== */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ========== COUNTDOWN STYLES ========== */
+        .countdown {
+            display: none;
+            text-align: center;
+            font-size: 4em;
+            color: #ff1493;
+            font-weight: bold;
+            animation: countdownPulse 1s infinite;
+        }
+
+        /* ========== REVEAL SECTION STYLES ========== */
+        .reveal {
+            display: none;
+            text-align: center;
+        }
+
+        .reveal-message {
+            font-size: 1.5em;
+            color: #ff1493;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: 3px solid #ff1493;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+            display: inline-block;
+        }
+
+        .custom-message {
+            font-style: italic;
+            color: #ff69b4;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        /* ========== VALENTINE QUESTION STYLES ========== */
+        .valentine-question {
+            margin-top: 30px;
+            font-size: 1.8em;
+            color: #ff1493;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .valentine-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .yes-btn, .no-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #32cd32 0%, #00ff00 100%);
+            color: white;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(50, 205, 50, 0.4);
+        }
+
+        .no-btn {
+            background: linear-gradient(135deg, #ff4444 0%, #ff6b6b 100%);
+            color: white;
+            position: relative;
+        }
+
+        /* No button moves on hover - fun interaction! */
+        .no-btn:hover {
+            transform: translate(calc(var(--x, 0) * 1px), calc(var(--y, 0) * 1px));
+        }
+
+        /* ========== SUCCESS MESSAGE STYLES ========== */
+        .success-message {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .success-message h2 {
+            color: #32cd32;
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        .success-message p {
+            color: #ff69b4;
+            font-size: 1.2em;
+        }
+
+        /* ========== SHARE SECTION STYLES ========== */
+        .share-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #ffb6c1;
+        }
+
+        .share-title {
+            color: #ff1493;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            color: white;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        /* ========== FLOATING HEARTS ANIMATION ========== */
+        .heart {
+            position: fixed;
+            font-size: 2em;
+            color: #ff1493;
+            pointer-events: none;
+            animation: float 4s ease-in-out infinite;
+            opacity: 0;
+            z-index: 5;
+        }
+
+        /* ========== CONFETTI STYLES ========== */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* ========== HIDDEN CLASS ========== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes countdownPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: #ff1493;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ========== MOBILE RESPONSIVE STYLES ========== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .subtitle {
+                font-size: 0.95em;
+            }
+
+            .countdown {
+                font-size: 3em;
+            }
+
+            .reveal-message {
+                font-size: 1.2em;
+            }
+
+            .valentine-question {
+                font-size: 1.4em;
+            }
+
+            .yes-btn, .no-btn {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+
+            .share-btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Initial Form Section -->
+        <div id="formSection">
+            <h1>💕 Valentine's Surprise 💕</h1>
+            <p class="subtitle">Create a special message for your Valentine!</p>
+            
+            <div class="form-group">
+                <label for="partnerName">Your Valentine's Name:</label>
+                <input type="text" id="partnerName" placeholder="Enter their name..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="customMessage">Optional Personal Message:</label>
+                <textarea id="customMessage" placeholder="Add a sweet message... (optional)"></textarea>
+            </div>
+            
+            <button class="btn" onclick="startExperience()">✨ Create Magic ✨</button>
+        </div>
+
+        <!-- Countdown Section -->
+        <div id="countdownSection" class="countdown">3</div>
+
+        <!-- Reveal Section -->
+        <div id="revealSection" class="reveal">
+            <div class="reveal-message">
+                <div class="typewriter" id="typewriterText"></div>
+            </div>
+            
+            <div class="custom-message" id="displayCustomMessage"></div>
+
+            <div class="valentine-question">💝 Will you be my Valentine? 💝</div>
+            
+            <div class="valentine-buttons">
+                <button class="yes-btn" onclick="handleYes()">Yes! 💖</button>
+                <button class="no-btn" id="noBtn" onmouseover="moveNoButton(event)">No 😢</button>
+            </div>
+
+            <!-- Success Message (shown after clicking Yes) -->
+            <div id="successMessage" class="success-message">
+                <h2>🎉 Yay! You made my day! 🎉</h2>
+                <p>Thank you for being my Valentine! 💕</p>
+            </div>
+
+            <!-- Share Section -->
+            <div class="share-section" id="shareSection">
+                <div class="share-title">✨ Share this with your Valentine! ✨</div>
+                <div class="share-buttons">
+                    <button class="share-btn copy-btn" onclick="copyShareLink()">
+                        📋 Copy Link
+                    </button>
+                    <button class="share-btn whatsapp-btn" onclick="shareWhatsApp()">
+                        💬 Share on WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== GLOBAL VARIABLES ==========
+        let partnerName = '';
+        let customMessage = '';
+        let shareableURL = '';
+
+        // ========== INITIALIZATION ==========
+        // Check if URL has parameters (someone shared a link)
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const name = urlParams.get('name');
+            const message = urlParams.get('message');
+
+            if (name) {
+                // Someone shared this link! Auto-fill and start
+                document.getElementById('partnerName').value = decodeURIComponent(name);
+                if (message) {
+                    document.getElementById('customMessage').value = decodeURIComponent(message);
+                }
+                // Auto-start the experience after a brief moment
+                setTimeout(() => {
+                    startExperience();
+                }, 500);
+            }
+        });
+
+        // ========== MAIN EXPERIENCE FLOW ==========
+        /**
+         * Starts the Valentine's Day experience
+         * Captures user input, starts countdown, and initiates animations
+         */
+        function startExperience() {
+            // Get input values
+            partnerName = document.getElementById('partnerName').value.trim();
+            customMessage = document.getElementById('customMessage').value.trim();
+
+            if (!partnerName) {
+                alert('Please enter your Valentine\'s name! 💕');
+                return;
+            }
+
+            // Hide form, show countdown
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('countdownSection').style.display = 'block';
+
+            // Start countdown from 3
+            startCountdown();
+
+            // Start floating hearts animation
+            startFloatingHearts();
+
+            // Generate shareable URL
+            generateShareableURL();
+        }
+
+        // ========== COUNTDOWN FUNCTIONALITY ==========
+        /**
+         * Creates a dramatic countdown from 3 to 1
+         */
+        function startCountdown() {
+            let count = 3;
+            const countdownElement = document.getElementById('countdownSection');
+
+            const countdownInterval = setInterval(() => {
+                count--;
+                
+                if (count > 0) {
+                    countdownElement.textContent = count;
+                } else {
+                    clearInterval(countdownInterval);
+                    // Hide countdown, show reveal
+                    countdownElement.style.display = 'none';
+                    showReveal();
+                }
+            }, 1000);
+        }
+
+        // ========== REVEAL FUNCTIONALITY ==========
+        /**
+         * Shows the reveal section with typewriter effect
+         */
+        function showReveal() {
+            const revealSection = document.getElementById('revealSection');
+            revealSection.style.display = 'block';
+
+            // Start typewriter effect
+            const message = `Hey ${partnerName}! 💕`;
+            typeWriterEffect(message);
+
+            // Show custom message if provided
+            if (customMessage) {
+                document.getElementById('displayCustomMessage').textContent = `"${customMessage}"`;
+            }
+
+            // Trigger confetti after a delay
+            setTimeout(() => {
+                createConfetti();
+            }, 2000);
+        }
+
+        // ========== TYPEWRITER EFFECT ==========
+        /**
+         * Creates a typewriter effect for the message
+         * @param {string} text - The text to type out
+         */
+        function typeWriterEffect(text) {
+            const element = document.getElementById('typewriterText');
+            let index = 0;
+
+            function type() {
+                if (index < text.length) {
+                    element.textContent += text.charAt(index);
+                    index++;
+                    setTimeout(type, 100);
+                } else {
+                    // Remove blinking cursor after typing is done
+                    setTimeout(() => {
+                        element.style.borderRight = 'none';
+                    }, 500);
+                }
+            }
+
+            type();
+        }
+
+        // ========== NO BUTTON MOVEMENT ==========
+        /**
+         * Makes the No button run away from the cursor
+         * This creates a fun, playful interaction
+         */
+        function moveNoButton(event) {
+            const noBtn = document.getElementById('noBtn');
+            const maxX = window.innerWidth - noBtn.offsetWidth - 100;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 100;
+
+            // Generate random position
+            const randomX = Math.random() * 200 - 100; // -100 to 100
+            const randomY = Math.random() * 200 - 100; // -100 to 100
+
+            // Apply random movement
+            noBtn.style.setProperty('--x', randomX);
+            noBtn.style.setProperty('--y', randomY);
+        }
+
+        // ========== YES BUTTON HANDLER ==========
+        /**
+         * Handles the Yes button click
+         * Shows success message and triggers celebration effects
+         */
+        function handleYes() {
+            // Hide buttons
+            document.querySelector('.valentine-buttons').classList.add('hidden');
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+
+            // Create massive confetti celebration
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    createConfetti();
+                }, i * 30);
+            }
+
+            // More hearts!
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createHeart();
+                }, i * 100);
+            }
+        }
+
+        // ========== FLOATING HEARTS ANIMATION ==========
+        /**
+         * Creates continuous floating hearts animation
+         */
+        function startFloatingHearts() {
+            setInterval(() => {
+                createHeart();
+            }, 800);
+        }
+
+        /**
+         * Creates a single floating heart element
+         */
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '💖';
+            
+            // Random horizontal position
+            heart.style.left = Math.random() * 100 + '%';
+            
+            // Random animation duration
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            
+            document.body.appendChild(heart);
+
+            // Remove heart after animation completes
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }
+
+        // ========== CONFETTI ANIMATION ==========
+        /**
+         * Creates confetti particles for celebration
+         */
+        function createConfetti() {
+            const colors = ['#ff1493', '#ff69b4', '#ffb6c1', '#ffc0cb', '#ff6347', '#ffd700', '#32cd32', '#87ceeb'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random color
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random position
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                
+                // Random animation
+                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear`;
+                
+                document.body.appendChild(confetti);
+
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // ========== SHARE FUNCTIONALITY ==========
+        /**
+         * Generates a shareable URL with query parameters
+         */
+        function generateShareableURL() {
+            const baseURL = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams();
+            
+            params.append('name', encodeURIComponent(partnerName));
+            if (customMessage) {
+                params.append('message', encodeURIComponent(customMessage));
+            }
+            
+            shareableURL = `${baseURL}?${params.toString()}`;
+        }
+
+        /**
+         * Copies the shareable link to clipboard
+         */
+        function copyShareLink() {
+            // Use the Clipboard API
+            navigator.clipboard.writeText(shareableURL).then(() => {
+                // Visual feedback
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Copied!';
+                btn.style.background = 'linear-gradient(135deg, #32cd32 0%, #00ff00 100%)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers
+                alert('Share this link: ' + shareableURL);
+            });
+        }
+
+        /**
+         * Shares the link via WhatsApp
+         */
+        function shareWhatsApp() {
+            const text = `💕 Someone has a special Valentine's message for you! Click here: ${shareableURL}`;
+            const whatsappURL = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+</body>
+</html>
