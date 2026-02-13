@@ -4,7 +4,7 @@ A playful, interactive Valentine's Day web application that lets you create pers
 
 ## Demo
 
-![Valentine Output Preview](https://nexageapps.github.io/valantine_web_app/valentine.html)
+[Valentine Output Preview](https://nexageapps.github.io/valantine_web_app/valentine.html)
 
 ![Valentine App Demo](https://github.com/nexageapps/valantine_web_app/blob/main/ValantineDemoV3.gif)
 
