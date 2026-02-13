@@ -1967,49 +1967,103 @@
         return;
       }
       
+      // Note: WhatsApp has restrictions on pre-filling messages via URL for security reasons
+      // The text parameter may not work in all cases (especially on desktop WhatsApp Web)
+      // This is a WhatsApp limitation, not a bug in our code
+      
       // Create the message text to share
-      // Include a romantic emoji and clear call-to-action
       const messageText = `💕 I have a special Valentine message for you! ${shareURL}`;
       
       // Log for debugging
       console.log('WhatsApp Share - Original URL:', shareURL);
       console.log('WhatsApp Share - Message Text:', messageText);
       
-      // Encode the message for URL
-      // encodeURIComponent handles spaces, emojis, and special characters
-      const encodedMessage = encodeURIComponent(messageText);
-      
-      console.log('WhatsApp Share - Encoded Message:', encodedMessage);
+      // Copy the message to clipboard first as a fallback
+      copyToClipboardSilent(messageText);
       
       // Detect if user is on mobile device
-      // Check for common mobile user agent patterns
-      // This determines which WhatsApp URL format to use
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
       console.log('WhatsApp Share - Is Mobile:', isMobile);
+      
+      // On mobile, try to use the share API if available
+      if (isMobile && navigator.share) {
+        navigator.share({
+          title: 'Valentine Message',
+          text: messageText
+        }).then(() => {
+          console.log('WhatsApp Share - Native share successful');
+        }).catch((error) => {
+          console.log('WhatsApp Share - Native share failed, opening WhatsApp directly');
+          openWhatsAppDirect(isMobile, messageText);
+        });
+      } else {
+        // Desktop or no share API - open WhatsApp directly
+        openWhatsAppDirect(isMobile, messageText);
+      }
+    }
+    
+    /**
+     * Opens WhatsApp directly (fallback method)
+     * Shows instructions since pre-filling may not work
+     */
+    function openWhatsAppDirect(isMobile, messageText) {
+      // Encode the message for URL
+      const encodedMessage = encodeURIComponent(messageText);
       
       // Generate appropriate WhatsApp URL based on device type
       let whatsappURL;
       
       if (isMobile) {
         // Mobile: Use wa.me URL (works on mobile apps)
-        // This opens the WhatsApp app directly on mobile devices
         whatsappURL = `https://wa.me/?text=${encodedMessage}`;
       } else {
         // Desktop: Use web.whatsapp.com (opens WhatsApp Web)
-        // This opens WhatsApp Web in the browser on desktop
         whatsappURL = `https://web.whatsapp.com/send?text=${encodedMessage}`;
       }
       
       console.log('WhatsApp Share - Final WhatsApp URL:', whatsappURL);
       
-      // Open WhatsApp in a new window/tab
-      // _blank ensures it doesn't navigate away from the Valentine app
+      // Show instructions to user since WhatsApp may not pre-fill the message
+      const instructions = `📱 Opening WhatsApp...\n\n⚠️ Note: WhatsApp may not pre-fill the message automatically due to their security policies.\n\nThe message has been copied to your clipboard!\n\nJust paste (Ctrl+V or Cmd+V) in WhatsApp to share.`;
+      
+      // Show instructions
+      setTimeout(() => {
+        alert(instructions);
+      }, 500);
+      
+      // Open WhatsApp
       const whatsappWindow = window.open(whatsappURL, '_blank');
       
       // Check if popup was blocked
       if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
-        alert('⚠️ Popup blocked!\n\nPlease allow popups for this site, then try again.\n\nOr use the "Copy Link" button and paste manually in WhatsApp.');
+        alert('⚠️ Popup blocked!\n\nThe message is copied to your clipboard.\n\nPlease:\n1. Open WhatsApp manually\n2. Paste (Ctrl+V or Cmd+V) the message');
+      }
+    }
+    
+    /**
+     * Copies text to clipboard silently (no confirmation message)
+     * Used as a fallback for WhatsApp sharing
+     */
+    function copyToClipboardSilent(text) {
+      if (isClipboardSupported()) {
+        navigator.clipboard.writeText(text).catch(err => {
+          console.error('Silent clipboard copy failed:', err);
+        });
+      } else {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('Silent clipboard copy failed:', err);
+        }
+        document.body.removeChild(textarea);
       }
     }
     
