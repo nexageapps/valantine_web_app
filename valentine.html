@@ -1432,6 +1432,12 @@
      * Hearts are automatically removed after animation completes to prevent memory leaks
      */
     function createFloatingHearts() {
+      // Clear any existing heart interval to prevent duplicates
+      if (heartInterval) {
+        clearInterval(heartInterval);
+        heartInterval = null;
+      }
+      
       // Limit to 25 hearts for performance
       // Too many hearts can slow down the animation on mobile devices
       const numberOfHearts = 25;
@@ -1444,10 +1450,11 @@
       // Staggered creation looks more natural than all hearts appearing simultaneously
       let heartsCreated = 0;
       
-      const heartInterval = setInterval(() => {
+      heartInterval = setInterval(() => {
         // Stop creating hearts once we reach the target number
         if (heartsCreated >= numberOfHearts) {
           clearInterval(heartInterval);
+          heartInterval = null;
           return;
         }
         
@@ -1479,7 +1486,9 @@
         // Remove heart element after animation completes (4s + delay)
         // This is important for memory management - prevents DOM bloat
         setTimeout(() => {
-          heart.remove();
+          if (heart.parentNode) {
+            heart.remove();
+          }
         }, (4 + randomDelay) * 1000);
         
         heartsCreated++;
@@ -1492,6 +1501,12 @@
      * Confetti particles rotate as they fall and are automatically removed after animation completes
      */
     function createConfetti() {
+      // Clear any existing confetti interval to prevent duplicates
+      if (confettiInterval) {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+      }
+      
       // Limit to 30 confetti pieces for performance
       // Balance between visual impact and smooth animation
       const numberOfConfetti = 30;
@@ -1513,10 +1528,11 @@
       // Staggered creation creates a more realistic confetti effect
       let confettiCreated = 0;
       
-      const confettiInterval = setInterval(() => {
+      confettiInterval = setInterval(() => {
         // Stop creating confetti once we reach the target number
         if (confettiCreated >= numberOfConfetti) {
           clearInterval(confettiInterval);
+          confettiInterval = null;
           return;
         }
         
@@ -1554,11 +1570,47 @@
         // Remove confetti element after animation completes (3s + delay)
         // Important for memory management - prevents DOM bloat
         setTimeout(() => {
-          confetti.remove();
+          if (confetti.parentNode) {
+            confetti.remove();
+          }
         }, (3 + randomDelay) * 1000);
         
         confettiCreated++;
       }, 100); // Create a new confetti piece every 100ms for continuous effect
+    }
+    
+    /**
+     * Cleans up all active intervals and animations
+     * This prevents memory leaks and ensures smooth performance
+     */
+    function cleanupAnimations() {
+      // Clear heart interval if active
+      if (heartInterval) {
+        clearInterval(heartInterval);
+        heartInterval = null;
+      }
+      
+      // Clear confetti interval if active
+      if (confettiInterval) {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+      }
+      
+      // Remove all floating hearts from DOM
+      const hearts = document.querySelectorAll('.floating-heart');
+      hearts.forEach(heart => {
+        if (heart.parentNode) {
+          heart.remove();
+        }
+      });
+      
+      // Remove all confetti from DOM
+      const confettiElements = document.querySelectorAll('.confetti');
+      confettiElements.forEach(confetti => {
+        if (confetti.parentNode) {
+          confetti.remove();
+        }
+      });
     }
     
     /**
@@ -1664,9 +1716,15 @@
       noBtn.style.left = `${newPosition.x}px`;
       noBtn.style.top = `${newPosition.y}px`;
       
-      // Add a subtle animation for smoother movement
-      // This makes the button "slide" to its new position rather than jumping instantly
+      // Use CSS transform for smoother animation (GPU accelerated)
+      // This provides better performance than animating left/top properties
       noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
+      noBtn.style.willChange = 'left, top';
+      
+      // Remove will-change after animation completes to free up resources
+      setTimeout(() => {
+        noBtn.style.willChange = 'auto';
+      }, 300);
     }
     
     /**
