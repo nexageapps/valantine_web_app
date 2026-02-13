@@ -101,7 +101,7 @@ Adjust animation speeds in CSS:
 --transition-slow: 0.5s ease;
 ```
 
-## 🧪 Testing
+## Testing
 
 Run the test suite:
 ```bash
@@ -117,7 +117,7 @@ Test cases include:
 - Mobile responsiveness
 - URL parameter parsing
 
-## 📱 Mobile Optimization
+## Mobile Optimization
 
 - Touch-friendly button sizes (minimum 44px)
 - Responsive font sizes and spacing
@@ -125,11 +125,11 @@ Test cases include:
 - iOS-specific fixes (prevents zoom on input focus)
 - Touch events for "No" button evasion
 
-## 🎯 User Flow
+## User Flow
 
-### Fast Flow (New!)
+### Fast Flow (New)
 ```
-Input Form → Generate Link → Copy/Share → Done! ✨
+Input Form → Generate Link → Copy/Share → Done
 ```
 
 ### Preview Flow
@@ -137,25 +137,21 @@ Input Form → Generate Link → Copy/Share → Done! ✨
 Input Form → Preview → Countdown → Reveal → Question → Share
 ```
 
-## 💡 Tips
+## Tips
 
 - Leave the message blank for a surprise default message
-- The "No" button is intentionally evasive - it's part of the fun!
+- The "No" button is intentionally evasive - it's part of the fun
 - Links work in incognito/private mode for testing
 - Custom messages support emojis and special characters
 
-## 🐛 Known Issues
+## Known Issues
 
-None currently! Report issues if you find any.
+None currently. Report issues if you find any.
 
-## 📄 License
+## License
 
-Free to use for personal Valentine's Day messages! 💕
+Free to use for personal Valentine's Day messages.
 
-## 🙏 Credits
+## Credits
 
-Created with love for Valentine's Day 2026 💘
-
----
-
-**Made with ❤️ for spreading love and joy!**
+Created with love for Valentine's Day 2026
