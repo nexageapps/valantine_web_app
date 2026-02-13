@@ -444,7 +444,7 @@
             <div class="share-section" id="shareSection">
                 <div class="share-title">✨ Share this with your Valentine! ✨</div>
                 <div class="share-buttons">
-                    <button class="share-btn copy-btn" onclick="copyShareLink()">
+                    <button class="share-btn copy-btn" onclick="copyShareLink(event)">
                         📋 Copy Link
                     </button>
                     <button class="share-btn whatsapp-btn" onclick="shareWhatsApp()">
@@ -706,12 +706,13 @@
 
         /**
          * Copies the shareable link to clipboard
+         * @param {Event} event - The click event
          */
-        function copyShareLink() {
+        function copyShareLink(event) {
             // Use the Clipboard API
             navigator.clipboard.writeText(shareableURL).then(() => {
-                // Visual feedback
-                const btn = event.target;
+                // Visual feedback - use currentTarget to get the button element
+                const btn = event.currentTarget;
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '✅ Copied!';
                 btn.style.background = 'linear-gradient(135deg, #32cd32 0%, #00ff00 100%)';
