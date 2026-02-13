@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Send a playful Valentine's Day message to someone special">
+  <title>Will You Be My Valentine? 💕</title>
+  
+  <style>
+    /* ===================================
+       CSS RESET & BASE STYLES
+       =================================== */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* ===================================
+       CSS VARIABLES
+       =================================== */
+    
+    :root {
+      /* Romantic Color Palette - Cute but Classy */
+      --color-primary: #ff6b9d;        /* Soft pink */
+      --color-secondary: #c44569;      /* Deep rose */
+      --color-accent: #ffa07a;         /* Light coral */
+      --color-background: #fff5f7;     /* Very light pink */
+      --color-text-dark: #2d3436;      /* Charcoal */
+      --color-text-light: #636e72;     /* Gray */
+      --color-white: #ffffff;
+      --color-error: #d63031;          /* Red for errors */
+      --color-success: #00b894;        /* Green for success */
+      
+      /* Typography */
+      --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-display: Georgia, 'Times New Roman', serif;
+      
+      /* Font Sizes - Mobile First */
+      --font-size-small: 0.875rem;     /* 14px */
+      --font-size-base: 1rem;          /* 16px */
+      --font-size-medium: 1.25rem;     /* 20px */
+      --font-size-large: 1.75rem;      /* 28px */
+      --font-size-xlarge: 2.5rem;      /* 40px */
+      --font-size-display: 3.5rem;     /* 56px */
+      
+      /* Spacing */
+      --spacing-xs: 0.5rem;            /* 8px */
+      --spacing-sm: 1rem;              /* 16px */
+      --spacing-md: 1.5rem;            /* 24px */
+      --spacing-lg: 2rem;              /* 32px */
+      --spacing-xl: 3rem;              /* 48px */
+      
+      /* Border Radius */
+      --radius-sm: 0.5rem;
+      --radius-md: 1rem;
+      --radius-lg: 1.5rem;
+      
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+      
+      /* Transitions */
+      --transition-fast: 0.2s ease;
+      --transition-normal: 0.3s ease;
+      --transition-slow: 0.5s ease;
+    }
+    
+    /* ===================================
+       BASE TYPOGRAPHY
+       =================================== */
+    
+    body {
+      font-family: var(--font-primary);
+      font-size: var(--font-size-base);
+      line-height: 1.6;
+      color: var(--color-text-dark);
+      background-color: var(--color-background);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--color-secondary);
+    }
+    
+    h1 {
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    h2 {
+      font-size: var(--font-size-large);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    p {
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    /* ===================================
+       SCREEN STRUCTURE
+       =================================== */
+    
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: var(--spacing-lg);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .screen.active {
+      display: flex;
+    }
+    
+    /* ===================================
+       INPUT SCREEN
+       =================================== */
+    
+    #input-screen {
+      background: linear-gradient(135deg, var(--color-background) 0%, #ffe5ec 100%);
+    }
+    
+    #input-screen .container {
+      max-width: 500px;
+    }
+    
+    #input-screen h1 {
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    /* ===================================
+       FORM STYLES
+       =================================== */
+    
+    #valentine-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    
+    .form-label {
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: var(--spacing-sm);
+      font-family: var(--font-primary);
+      font-size: var(--font-size-base);
+      color: var(--color-text-dark);
+      background-color: var(--color-white);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--color-text-light);
+      opacity: 0.7;
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* Error States */
+    .form-group.error .form-input {
+      border-color: var(--color-error);
+    }
+    
+    .error-message {
+      display: none;
+      font-size: var(--font-size-small);
+      color: var(--color-error);
+      margin-top: var(--spacing-xs);
+    }
+    
+    .form-group.error .error-message {
+      display: block;
+    }
+    
+    /* ===================================
+       BUTTON STYLES
+       =================================== */
+    
+    .btn {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-family: var(--font-primary);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: var(--color-white);
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      outline: none;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-md);
+      min-height: 44px; /* Touch-friendly minimum */
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn:active {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    }
+    
+    /* Tablet button styles */
+    @media (min-width: 481px) {
+      .btn {
+        padding: calc(var(--spacing-sm) + 2px) var(--spacing-xl);
+        font-size: 1.125rem;
+      }
+    }
+    
+    /* Desktop button styles */
+    @media (min-width: 1025px) {
+      .btn {
+        padding: var(--spacing-md) calc(var(--spacing-xl) + var(--spacing-sm));
+        font-size: 1.25rem;
+      }
+    }
+    
+    /* ===================================
+       COUNTDOWN SCREEN
+       =================================== */
+    
+    #countdown-screen {
+      background: linear-gradient(135deg, #ffe5ec 0%, #ffd4e5 100%);
+    }
+    
+    #countdown-number {
+      font-family: var(--font-display);
+      font-size: 8rem;
+      font-weight: 700;
+      color: var(--color-secondary);
+      text-shadow: 0 4px 20px rgba(196, 69, 105, 0.3);
+      animation: countdown-pulse 1s ease-in-out;
+    }
+    
+    /* Countdown animation with scale and fade effects */
+    @keyframes countdown-pulse {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Tablet countdown styles */
+    @media (min-width: 481px) {
+      #countdown-number {
+        font-size: 12rem;
+      }
+    }
+    
+    /* Desktop countdown styles */
+    @media (min-width: 1025px) {
+      #countdown-number {
+        font-size: 16rem;
+      }
+    }
+    
+    /* ===================================
+       REVEAL SCREEN
+       =================================== */
+    
+    #reveal-screen {
+      background: linear-gradient(135deg, #ffd4e5 0%, #ffc2d9 100%);
+      position: relative;
+    }
+    
+    #message-container {
+      max-width: 600px;
+      padding: var(--spacing-lg);
+      text-align: center;
+      z-index: 10;
+      position: relative;
+    }
+    
+    #recipient-name {
+      font-family: var(--font-display);
+      font-size: var(--font-size-xlarge);
+      font-weight: 700;
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-md);
+      text-shadow: 0 2px 10px rgba(196, 69, 105, 0.2);
+    }
+    
+    #valentine-message {
+      font-family: var(--font-primary);
+      font-size: var(--font-size-medium);
+      line-height: 1.8;
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-lg);
+      min-height: 3em;
+    }
+    
+    /* Tablet reveal screen styles */
+    @media (min-width: 481px) {
+      #message-container {
+        padding: var(--spacing-xl);
+      }
+      
+      #recipient-name {
+        font-size: 4rem;
+      }
+      
+      #valentine-message {
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Desktop reveal screen styles */
+    @media (min-width: 1025px) {
+      #message-container {
+        max-width: 800px;
+      }
+      
+      #recipient-name {
+        font-size: 5rem;
+      }
+      
+      #valentine-message {
+        font-size: 1.75rem;
+      }
+    }
+    
+    /* ===================================
+       RESPONSIVE LAYOUT - MOBILE FIRST
+       =================================== */
+    
+    /* Base styles for mobile (320px+) */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      padding: var(--spacing-sm);
+    }
+    
+    /* Tablet styles (481px+) */
+    @media (min-width: 481px) {
+      :root {
+        --font-size-large: 2rem;       /* 32px */
+        --font-size-xlarge: 3rem;      /* 48px */
+        --font-size-display: 4.5rem;   /* 72px */
+        --spacing-lg: 2.5rem;          /* 40px */
+        --spacing-xl: 4rem;            /* 64px */
+      }
+      
+      .container {
+        max-width: 600px;
+        padding: var(--spacing-md);
+      }
+      
+      .screen {
+        padding: var(--spacing-xl);
+      }
+    }
+    
+    /* Desktop styles (1025px+) */
+    @media (min-width: 1025px) {
+      :root {
+        --font-size-large: 2.25rem;    /* 36px */
+        --font-size-xlarge: 3.5rem;    /* 56px */
+        --font-size-display: 5rem;     /* 80px */
+        --spacing-xl: 5rem;            /* 80px */
+      }
+      
+      .container {
+        max-width: 800px;
+      }
+    }
+    
+    /* ===================================
+       UTILITY CLASSES
+       =================================== */
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .mt-sm { margin-top: var(--spacing-sm); }
+    .mt-md { margin-top: var(--spacing-md); }
+    .mt-lg { margin-top: var(--spacing-lg); }
+    
+    .mb-sm { margin-bottom: var(--spacing-sm); }
+    .mb-md { margin-bottom: var(--spacing-md); }
+    .mb-lg { margin-bottom: var(--spacing-lg); }
+  </style>
+</head>
+<body>
+  
+  <!-- ===================================
+       INPUT SCREEN
+       =================================== -->
+  <div id="input-screen" class="screen active">
+    <div class="container">
+      <h1>💕 Create Your Valentine 💕</h1>
+      <p class="mb-lg" style="color: var(--color-text-light);">
+        Send a playful Valentine's Day message to someone special
+      </p>
+      
+      <form id="valentine-form">
+        <div class="form-group" id="name-group">
+          <label for="name-input" class="form-label">Their Name *</label>
+          <input 
+            type="text" 
+            id="name-input" 
+            class="form-input"
+            placeholder="Enter their name"
+            required
+            autocomplete="off"
+          >
+          <span class="error-message">Please enter a name</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="message-input" class="form-label">Custom Message (Optional)</label>
+          <textarea 
+            id="message-input" 
+            class="form-textarea"
+            placeholder="Add a personal message... or leave blank for a surprise!"
+            autocomplete="off"
+          ></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          Create Valentine ✨
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- ===================================
+       COUNTDOWN SCREEN
+       =================================== -->
+  <div id="countdown-screen" class="screen">
+    <div class="container">
+      <div id="countdown-number">3</div>
+    </div>
+  </div>
+  
+  <!-- ===================================
+       REVEAL SCREEN
+       =================================== -->
+  <div id="reveal-screen" class="screen">
+    <div id="message-container">
+      <h1 id="recipient-name"></h1>
+      <p id="valentine-message"></p>
+    </div>
+  </div>
+  
+  <script>
+    // ===================================
+    // APPLICATION STATE
+    // ===================================
+    
+    // Store the recipient's name and custom message for use throughout the app
+    let recipientName = '';
+    let customMessage = '';
+    
+    // ===================================
+    // UTILITY FUNCTIONS
+    // ===================================
+    
+    /**
+     * Validates that the name input is not empty or whitespace-only
+     * @param {string} name - The name to validate
+     * @returns {boolean} - True if valid, false if empty/whitespace-only
+     */
+    function validateNameInput(name) {
+      // Trim whitespace and check if the result is non-empty
+      return name.trim().length > 0;
+    }
+    
+    /**
+     * Generates a shareable URL with encoded query parameters
+     * @param {string} name - The recipient's name
+     * @param {string} message - The custom message (can be empty)
+     * @returns {string} - The complete shareable URL with query parameters
+     */
+    function generateShareURL(name, message) {
+      // Get the current page URL (base URL without query parameters)
+      const baseURL = window.location.origin + window.location.pathname;
+      
+      // Use URLSearchParams API for proper encoding of special characters
+      const params = new URLSearchParams();
+      params.set('name', name);
+      
+      // Only add message parameter if it's not empty
+      if (message && message.trim().length > 0) {
+        params.set('msg', message);
+      }
+      
+      // Construct and return the full URL with query parameters
+      return `${baseURL}?${params.toString()}`;
+    }
+    
+    /**
+     * Parses URL query parameters to extract name and message
+     * @returns {Object} - Object with name and message properties (both strings, empty if not present)
+     */
+    function parseURLParams() {
+      // Get the query string from the current URL
+      const queryString = window.location.search;
+      
+      // Use URLSearchParams API for proper decoding of special characters
+      const params = new URLSearchParams(queryString);
+      
+      // Extract name and message parameters
+      // Use empty string as default if parameter is not present
+      const name = params.get('name') || '';
+      const message = params.get('msg') || '';
+      
+      // Return object with name and message properties
+      return {
+        name: name,
+        message: message
+      };
+    }
+    
+    // ===================================
+    // EVENT HANDLERS
+    // ===================================
+    
+    /**
+     * Handles form submission with validation
+     * @param {Event} event - The form submit event
+     */
+    function handleFormSubmit(event) {
+      // Prevent default form submission
+      event.preventDefault();
+      
+      // Get form values
+      const nameInput = document.getElementById('name-input');
+      const messageInput = document.getElementById('message-input');
+      const nameGroup = document.getElementById('name-group');
+      
+      const name = nameInput.value;
+      const message = messageInput.value;
+      
+      // Validate name input
+      if (!validateNameInput(name)) {
+        // Show error state
+        nameGroup.classList.add('error');
+        nameInput.focus();
+        return; // Prevent form submission
+      }
+      
+      // Remove error state if validation passes
+      nameGroup.classList.remove('error');
+      
+      // Store name and message in global variables for later use
+      recipientName = name.trim();
+      customMessage = message.trim();
+      
+      // Transition to countdown screen
+      transitionToCountdown();
+    }
+    
+    /**
+     * Transitions from input screen to countdown screen
+     */
+    function transitionToCountdown() {
+      // Hide input screen
+      const inputScreen = document.getElementById('input-screen');
+      inputScreen.classList.remove('active');
+      
+      // Show countdown screen
+      const countdownScreen = document.getElementById('countdown-screen');
+      countdownScreen.classList.add('active');
+      
+      // Start countdown animation
+      startCountdown();
+    }
+    
+    /**
+     * Starts the countdown animation from 3 to 1
+     * Displays each number for approximately 1 second
+     * Transitions to reveal screen when countdown completes
+     * Disables user interaction during countdown
+     */
+    function startCountdown() {
+      const countdownElement = document.getElementById('countdown-number');
+      const countdownScreen = document.getElementById('countdown-screen');
+      
+      // Disable user interaction during countdown
+      countdownScreen.style.pointerEvents = 'none';
+      
+      // Countdown sequence: 3, 2, 1
+      let currentNumber = 3;
+      
+      // Display initial number (3)
+      countdownElement.textContent = currentNumber;
+      
+      // Use setTimeout to display each number for ~1 second
+      // Display "2" after 1 second
+      setTimeout(() => {
+        currentNumber = 2;
+        countdownElement.textContent = currentNumber;
+        // Re-trigger animation by removing and re-adding the element
+        countdownElement.style.animation = 'none';
+        // Force reflow to restart animation
+        void countdownElement.offsetWidth;
+        countdownElement.style.animation = 'countdown-pulse 1s ease-in-out';
+      }, 1000);
+      
+      // Display "1" after 2 seconds
+      setTimeout(() => {
+        currentNumber = 1;
+        countdownElement.textContent = currentNumber;
+        // Re-trigger animation
+        countdownElement.style.animation = 'none';
+        void countdownElement.offsetWidth;
+        countdownElement.style.animation = 'countdown-pulse 1s ease-in-out';
+      }, 2000);
+      
+      // Transition to reveal screen after 3 seconds (when countdown completes)
+      setTimeout(() => {
+        transitionToReveal();
+      }, 3000);
+    }
+    
+    /**
+     * Reveals text character by character with a typewriter effect
+     * @param {HTMLElement} element - The DOM element to display the text in
+     * @param {string} text - The text to reveal character by character
+     * @param {number} speed - The delay in milliseconds between each character (default: 60ms)
+     * @returns {Promise} - Resolves when the typewriter effect completes
+     */
+    function typewriterEffect(element, text, speed = 60) {
+      return new Promise((resolve) => {
+        // Clear any existing content in the element
+        element.textContent = '';
+        
+        // Track the current character index
+        let charIndex = 0;
+        
+        /**
+         * Reveals the next character in the sequence
+         */
+        function revealNextChar() {
+          // Check if we've revealed all characters
+          if (charIndex < text.length) {
+            // Add the next character to the element
+            element.textContent += text.charAt(charIndex);
+            charIndex++;
+            
+            // Schedule the next character reveal
+            setTimeout(revealNextChar, speed);
+          } else {
+            // All characters revealed - resolve the promise
+            resolve();
+          }
+        }
+        
+        // Start revealing characters
+        revealNextChar();
+      });
+    }
+    
+    /**
+     * Transitions from countdown screen to reveal screen
+     * Displays the recipient's name and message with typewriter effect
+     */
+    function transitionToReveal() {
+      // Hide countdown screen
+      const countdownScreen = document.getElementById('countdown-screen');
+      countdownScreen.classList.remove('active');
+      
+      // Re-enable user interaction
+      countdownScreen.style.pointerEvents = 'auto';
+      
+      // Show reveal screen
+      const revealScreen = document.getElementById('reveal-screen');
+      revealScreen.classList.add('active');
+      
+      // Display the personalized message with typewriter effect
+      showReveal(recipientName, customMessage);
+    }
+    
+    /**
+     * Displays the personalized Valentine message with typewriter effect
+     * @param {string} name - The recipient's name
+     * @param {string} customMsg - The custom message (can be empty)
+     */
+    async function showReveal(name, customMsg) {
+      // Get DOM elements
+      const nameElement = document.getElementById('recipient-name');
+      const messageElement = document.getElementById('valentine-message');
+      
+      // Display the recipient's name immediately (no typewriter effect for name)
+      nameElement.textContent = name;
+      
+      // Determine which message to display
+      let messageToDisplay;
+      
+      if (customMsg && customMsg.length > 0) {
+        // Use custom message if provided
+        messageToDisplay = customMsg;
+      } else {
+        // Use default romantic message if no custom message
+        messageToDisplay = "You make my heart skip a beat! 💕 Every moment with you is special, and I can't imagine my life without you. Will you be my Valentine?";
+      }
+      
+      // Apply typewriter effect to the message
+      await typewriterEffect(messageElement, messageToDisplay, 60);
+      
+      // TODO: Start visual effects (hearts and confetti) - will be implemented in task 7
+    }
+    
+    /**
+     * Removes error state when user starts typing
+     */
+    function handleNameInput() {
+      const nameGroup = document.getElementById('name-group');
+      nameGroup.classList.remove('error');
+    }
+    
+    // ===================================
+    // INITIALIZATION
+    // ===================================
+    
+    /**
+     * Initializes the app on page load
+     * Checks for URL parameters and determines which screen to show
+     */
+    function initializeApp() {
+      // Parse URL parameters
+      const urlParams = parseURLParams();
+      
+      // Check if valid parameters exist (name must be non-empty)
+      if (urlParams.name && validateNameInput(urlParams.name)) {
+        // Valid parameters found - skip input form and go to countdown
+        recipientName = urlParams.name.trim();
+        customMessage = urlParams.message.trim();
+        
+        // Hide input screen and show countdown screen
+        const inputScreen = document.getElementById('input-screen');
+        inputScreen.classList.remove('active');
+        
+        const countdownScreen = document.getElementById('countdown-screen');
+        countdownScreen.classList.add('active');
+        
+        // Start countdown animation
+        startCountdown();
+      } else {
+        // No valid parameters - show input form (default state)
+        // Input screen is already active by default in HTML
+        // No action needed here
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the app (check URL parameters)
+      initializeApp();
+      
+      // Bind form submit event
+      const form = document.getElementById('valentine-form');
+      form.addEventListener('submit', handleFormSubmit);
+      
+      // Bind input event to clear error on typing
+      const nameInput = document.getElementById('name-input');
+      nameInput.addEventListener('input', handleNameInput);
+    });
+  </script>
+  
+</body>
+</html>
