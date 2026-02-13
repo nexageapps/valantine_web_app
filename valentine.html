@@ -850,10 +850,44 @@
           ></textarea>
         </div>
         
-        <button type="submit" class="btn btn-primary">
-          Create Valentine ✨
-        </button>
+        <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+          <button type="button" id="generate-link-btn" class="btn btn-primary" style="flex: 1; min-width: 200px;">
+            📋 Generate Link
+          </button>
+          <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #c44569 0%, #8e2c4a 100%);">
+            👀 Preview First
+          </button>
+        </div>
       </form>
+      
+      <!-- Link Generation Section -->
+      <div id="link-section" class="hidden" style="margin-top: var(--spacing-lg); padding: var(--spacing-lg); background: var(--color-white); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+        <h3 style="color: var(--color-secondary); margin-bottom: var(--spacing-md);">✨ Your Valentine Link is Ready!</h3>
+        <p style="color: var(--color-text-light); margin-bottom: var(--spacing-md); font-size: var(--font-size-small);">
+          Share this link with your special someone:
+        </p>
+        <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); flex-wrap: wrap;">
+          <input 
+            type="text" 
+            id="generated-link" 
+            readonly 
+            class="form-input" 
+            style="flex: 1; min-width: 200px; font-size: var(--font-size-small); cursor: pointer;"
+            onclick="this.select()"
+          >
+        </div>
+        <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+          <button id="copy-generated-link-btn" class="btn btn-share" style="flex: 1; min-width: 150px;">
+            📋 Copy Link
+          </button>
+          <button id="whatsapp-generated-btn" class="btn btn-share" style="flex: 1; min-width: 150px;">
+            💬 WhatsApp
+          </button>
+        </div>
+        <div id="copy-generated-confirmation" class="hidden" style="margin-top: var(--spacing-sm); color: var(--color-success); font-weight: 600; text-align: center;">
+          ✓ Link copied to clipboard!
+        </div>
+      </div>
     </div>
   </div>
   
