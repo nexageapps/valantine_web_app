@@ -29,7 +29,10 @@ Watch the full Valentine experience in action - from link generation to the play
 
 ### Share Options
 - Copy Link: One-click copy to clipboard
-- WhatsApp Integration: Share directly via WhatsApp (mobile & desktop)
+- WhatsApp Integration: Opens WhatsApp and copies message to clipboard
+  - Note: Due to WhatsApp's security policies, the message may not pre-fill automatically
+  - The message is automatically copied - just paste (Ctrl+V or Cmd+V) in WhatsApp
+  - On mobile, uses native share API when available
 - URL Parameters: Links automatically include name and message
 
 ### Design & UX
