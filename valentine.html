@@ -1813,8 +1813,13 @@
     function handleWhatsAppGeneratedClick() {
       const shareURL = window.currentGeneratedURL;
       
+      console.log('WhatsApp Generated Click - shareURL:', shareURL);
+      
       if (shareURL) {
         shareOnWhatsApp(shareURL);
+      } else {
+        console.error('WhatsApp Generated Click - No shareURL found!');
+        alert('⚠️ Error: No link generated yet. Please click "Generate Link" first.');
       }
     }
     
@@ -1955,6 +1960,13 @@
      * @param {string} shareURL - The URL to share via WhatsApp
      */
     function shareOnWhatsApp(shareURL) {
+      // Check if the URL is a file:// URL (local file system)
+      // WhatsApp doesn't work well with file:// URLs
+      if (shareURL.startsWith('file://')) {
+        alert('⚠️ WhatsApp sharing works best when the app is hosted online.\n\nPlease:\n1. Copy the link manually using the "Copy Link" button\n2. Paste it directly in WhatsApp\n\nOr deploy to GitHub Pages for automatic WhatsApp sharing.');
+        return;
+      }
+      
       // Create the message text to share
       // Include a romantic emoji and clear call-to-action
       const messageText = `💕 I have a special Valentine message for you! ${shareURL}`;
@@ -1993,7 +2005,12 @@
       
       // Open WhatsApp in a new window/tab
       // _blank ensures it doesn't navigate away from the Valentine app
-      window.open(whatsappURL, '_blank');
+      const whatsappWindow = window.open(whatsappURL, '_blank');
+      
+      // Check if popup was blocked
+      if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
+        alert('⚠️ Popup blocked!\n\nPlease allow popups for this site, then try again.\n\nOr use the "Copy Link" button and paste manually in WhatsApp.');
+      }
     }
     
     /**
@@ -2004,8 +2021,13 @@
       // Get the share URL that was generated when Yes button was clicked
       const shareURL = window.currentShareURL;
       
+      console.log('WhatsApp Click - shareURL:', shareURL);
+      
       if (shareURL) {
         shareOnWhatsApp(shareURL);
+      } else {
+        console.error('WhatsApp Click - No shareURL found!');
+        alert('⚠️ Error: No link generated yet. Please click "Yes" first.');
       }
     }
     
