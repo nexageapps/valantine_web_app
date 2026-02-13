@@ -1103,9 +1103,10 @@
      * This creates the magic link that can be shared to send a personalized Valentine
      * @param {string} name - The recipient's name
      * @param {string} message - The custom message (can be empty)
+     * @param {string} response - Optional response ('yes' if they said yes)
      * @returns {string} - The complete shareable URL with query parameters
      */
-    function generateShareURL(name, message) {
+    function generateShareURL(name, message, response) {
       // Sanitize inputs to prevent XSS and limit length
       // This is critical for security - prevents malicious code injection
       const MAX_NAME_LENGTH = 200;
@@ -1131,14 +1132,20 @@
         params.set('msg', sanitizedMessage);
       }
       
+      // Add response parameter if they said yes
+      if (response === 'yes') {
+        params.set('response', 'yes');
+      }
+      
       // Construct and return the full URL with query parameters
       // Example: https://example.com/valentine.html?name=John&msg=You%20are%20amazing
+      // Or with response: https://example.com/valentine.html?name=Sarah&response=yes
       return `${currentURL}?${params.toString()}`;
     }
     
     /**
      * Parses URL query parameters to extract name and message
-     * @returns {Object} - Object with name and message properties (both strings, empty if not present)
+     * @returns {Object} - Object with name, message, and response properties (all strings, empty if not present)
      */
     function parseURLParams() {
       // Get the query string from the current URL
@@ -1151,6 +1158,7 @@
       // Use empty string as default if parameter is not present
       let name = params.get('name') || '';
       let message = params.get('msg') || '';
+      let response = params.get('response') || '';
       
       // Sanitize and validate parameter lengths to prevent abuse
       const MAX_NAME_LENGTH = 200;
@@ -1159,10 +1167,11 @@
       name = sanitizeInput(name, MAX_NAME_LENGTH);
       message = sanitizeInput(message, MAX_MESSAGE_LENGTH);
       
-      // Return object with name and message properties
+      // Return object with name, message, and response properties
       return {
         name: name,
-        message: message
+        message: message,
+        response: response
       };
     }
     
@@ -1269,8 +1278,8 @@
       const countdownScreen = document.getElementById('countdown-screen');
       countdownScreen.classList.add('active');
       
-      // Start countdown animation
-      startCountdown();
+      // Start countdown animation (not a yes response, just preview)
+      startCountdown(false);
     }
     
     /**
@@ -1278,8 +1287,9 @@
      * Displays each number for approximately 1 second
      * Transitions to reveal screen when countdown completes
      * Disables user interaction during countdown
+     * @param {boolean} isYesResponse - Whether this is showing a "yes" response
      */
-    function startCountdown() {
+    function startCountdown(isYesResponse) {
       const countdownElement = document.getElementById('countdown-number');
       const countdownScreen = document.getElementById('countdown-screen');
       
@@ -1326,7 +1336,7 @@
       // Transition to reveal screen after 3 seconds (when countdown completes)
       // Total countdown duration: 3 seconds (1s per number)
       setTimeout(() => {
-        transitionToReveal();
+        transitionToReveal(isYesResponse);
       }, 3000);
     }
     
@@ -1378,8 +1388,9 @@
      * Transitions from countdown screen to reveal screen
      * Displays the recipient's name and message with typewriter effect
      * Cleans up countdown animations for better performance
+     * @param {boolean} isYesResponse - Whether this is showing a "yes" response
      */
-    function transitionToReveal() {
+    function transitionToReveal(isYesResponse) {
       // Hide countdown screen
       const countdownScreen = document.getElementById('countdown-screen');
       countdownScreen.classList.remove('active');
@@ -1392,7 +1403,7 @@
       revealScreen.classList.add('active');
       
       // Display the personalized message with typewriter effect
-      showReveal(recipientName, customMessage);
+      showReveal(recipientName, customMessage, isYesResponse);
     }
     
     /**
@@ -1400,8 +1411,9 @@
      * This is the main reveal function that orchestrates the romantic message display
      * @param {string} name - The recipient's name
      * @param {string} customMsg - The custom message (can be empty)
+     * @param {boolean} isYesResponse - Whether this is showing a "yes" response
      */
-    async function showReveal(name, customMsg) {
+    async function showReveal(name, customMsg, isYesResponse) {
       // Get DOM elements for the reveal screen
       const nameElement = document.getElementById('recipient-name');
       const messageElement = document.getElementById('valentine-message');
@@ -1418,10 +1430,16 @@
       // Use textContent to prevent XSS attacks (not innerHTML)
       nameElement.textContent = name;
       
-      // Determine which message to display based on whether custom message was provided
+      // Determine which message to display
       let messageToDisplay;
       
-      if (customMsg && customMsg.length > 0) {
+      if (isYesResponse) {
+        // Special message when someone said YES!
+        messageToDisplay = "🎉 She said YES! 💕 Your Valentine accepted! This is the beginning of something beautiful. Congratulations! 🎊";
+        
+        // Hide the question section since they already answered
+        questionSection.classList.add('hidden');
+      } else if (customMsg && customMsg.length > 0) {
         // Use custom message if provided by the sender
         messageToDisplay = customMsg;
       } else {
@@ -1436,8 +1454,10 @@
       await typewriterEffect(messageElement, messageToDisplay, 60);
       
       // Show the question section after typewriter effect completes
-      // This creates a natural flow: name → message → question
-      questionSection.classList.remove('hidden');
+      // Only show if this is not a "yes" response (already hidden above if it is)
+      if (!isYesResponse) {
+        questionSection.classList.remove('hidden');
+      }
     }
     
     /**
@@ -1669,8 +1689,9 @@
       const shareSection = document.getElementById('share-section');
       shareSection.classList.remove('hidden');
       
-      // Generate the share URL for the current Valentine message
-      const shareURL = generateShareURL(recipientName, customMessage);
+      // Generate the share URL with 'yes' response parameter
+      // This allows the recipient to share back that they said yes
+      const shareURL = generateShareURL(recipientName, customMessage, 'yes');
       
       // Store the share URL for use in copy and WhatsApp functions
       window.currentShareURL = shareURL;
@@ -1999,6 +2020,9 @@
         recipientName = urlParams.name.trim();
         customMessage = urlParams.message.trim();
         
+        // Check if this is a "yes" response link
+        const isYesResponse = urlParams.response === 'yes';
+        
         // Hide input screen and show countdown screen
         const inputScreen = document.getElementById('input-screen');
         inputScreen.classList.remove('active');
@@ -2007,8 +2031,8 @@
         countdownScreen.classList.add('active');
         
         // Start countdown animation immediately
-        // This creates the dramatic reveal experience for the recipient
-        startCountdown();
+        // Pass the isYesResponse flag to show special message if they said yes
+        startCountdown(isYesResponse);
       } else {
         // No valid parameters - show input form (default state)
         // This is someone creating a new Valentine message
