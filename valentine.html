@@ -379,24 +379,282 @@
     }
     
     /* ===================================
+       QUESTION SECTION
+       =================================== */
+    
+    #question-section {
+      margin-top: var(--spacing-xl);
+      padding-top: var(--spacing-lg);
+    }
+    
+    .question-text {
+      font-family: var(--font-display);
+      font-size: var(--font-size-large);
+      color: var(--color-secondary);
+      margin-bottom: var(--spacing-lg);
+      text-shadow: 0 2px 8px rgba(196, 69, 105, 0.15);
+    }
+    
+    #button-container {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    /* Yes Button - Romantic gradient */
+    .btn-yes {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      font-size: var(--font-size-medium);
+      padding: var(--spacing-md) var(--spacing-xl);
+      min-width: 140px;
+    }
+    
+    .btn-yes:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
+    }
+    
+    /* No Button - Subtle styling */
+    .btn-no {
+      background: linear-gradient(135deg, var(--color-text-light) 0%, #95a5a6 100%);
+      font-size: var(--font-size-base);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      min-width: 100px;
+      position: relative;
+      transition: all var(--transition-fast);
+    }
+    
+    .btn-no:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Tablet question section styles */
+    @media (min-width: 481px) {
+      .question-text {
+        font-size: 2.5rem;
+      }
+      
+      #button-container {
+        gap: var(--spacing-lg);
+      }
+      
+      .btn-yes {
+        font-size: 1.5rem;
+        padding: var(--spacing-md) calc(var(--spacing-xl) + var(--spacing-sm));
+        min-width: 180px;
+      }
+      
+      .btn-no {
+        font-size: 1.125rem;
+        padding: var(--spacing-sm) var(--spacing-xl);
+        min-width: 120px;
+      }
+    }
+    
+    /* Desktop question section styles */
+    @media (min-width: 1025px) {
+      .question-text {
+        font-size: 3rem;
+      }
+      
+      .btn-yes {
+        font-size: 1.75rem;
+        min-width: 200px;
+      }
+      
+      .btn-no {
+        font-size: 1.25rem;
+        min-width: 140px;
+      }
+    }
+    
+    /* ===================================
+       SUCCESS SECTION
+       =================================== */
+    
+    #success-section {
+      margin-top: var(--spacing-xl);
+      padding-top: var(--spacing-lg);
+      animation: success-appear 0.5s ease-out;
+    }
+    
+    .success-message {
+      font-family: var(--font-display);
+      font-size: var(--font-size-large);
+      color: var(--color-success);
+      margin-bottom: var(--spacing-md);
+      text-shadow: 0 2px 8px rgba(0, 184, 148, 0.2);
+    }
+    
+    .success-text {
+      font-size: var(--font-size-medium);
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    @keyframes success-appear {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Tablet success section styles */
+    @media (min-width: 481px) {
+      .success-message {
+        font-size: 2.5rem;
+      }
+      
+      .success-text {
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Desktop success section styles */
+    @media (min-width: 1025px) {
+      .success-message {
+        font-size: 3rem;
+      }
+      
+      .success-text {
+        font-size: 1.75rem;
+      }
+    }
+    
+    /* ===================================
+       SHARE SECTION
+       =================================== */
+    
+    #share-section {
+      margin-top: var(--spacing-lg);
+    }
+    
+    .share-buttons {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .btn-share {
+      background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+      font-size: var(--font-size-base);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      min-width: 160px;
+    }
+    
+    .btn-share:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(0, 184, 148, 0.3);
+    }
+    
+    #copy-confirmation {
+      font-size: var(--font-size-small);
+      color: var(--color-success);
+      font-weight: 600;
+      padding: var(--spacing-xs);
+      animation: fade-in-out 2s ease-in-out;
+    }
+    
+    @keyframes fade-in-out {
+      0%, 100% {
+        opacity: 0;
+      }
+      10%, 90% {
+        opacity: 1;
+      }
+    }
+    
+    /* Tablet share section styles */
+    @media (min-width: 481px) {
+      .share-buttons {
+        gap: var(--spacing-lg);
+      }
+      
+      .btn-share {
+        font-size: 1.125rem;
+        padding: var(--spacing-sm) var(--spacing-xl);
+        min-width: 200px;
+      }
+      
+      #copy-confirmation {
+        font-size: var(--font-size-base);
+      }
+    }
+    
+    /* Desktop share section styles */
+    @media (min-width: 1025px) {
+      .btn-share {
+        font-size: 1.25rem;
+        min-width: 220px;
+      }
+    }
+    
+    /* ===================================
        RESPONSIVE LAYOUT - MOBILE FIRST
        =================================== */
     
     /* Base styles for mobile (320px+) */
+    /* All base styles above are optimized for mobile devices */
     .container {
       width: 100%;
       max-width: 100%;
       padding: var(--spacing-sm);
     }
     
+    /* Ensure minimum touch target size on mobile */
+    @media (max-width: 480px) {
+      .btn,
+      .btn-yes,
+      .btn-no,
+      .btn-share {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* Adjust input fields for mobile */
+      .form-input,
+      .form-textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 12px;
+      }
+      
+      /* Reduce spacing on very small screens */
+      .screen {
+        padding: var(--spacing-md);
+      }
+      
+      /* Adjust floating hearts size for mobile */
+      .floating-heart {
+        font-size: 1.5rem;
+      }
+    }
+    
     /* Tablet styles (481px+) */
     @media (min-width: 481px) {
       :root {
-        --font-size-large: 2rem;       /* 32px */
-        --font-size-xlarge: 3rem;      /* 48px */
-        --font-size-display: 4.5rem;   /* 72px */
-        --spacing-lg: 2.5rem;          /* 40px */
-        --spacing-xl: 4rem;            /* 64px */
+        --font-size-small: 1rem;         /* 16px */
+        --font-size-base: 1.125rem;      /* 18px */
+        --font-size-medium: 1.5rem;      /* 24px */
+        --font-size-large: 2rem;         /* 32px */
+        --font-size-xlarge: 3rem;        /* 48px */
+        --font-size-display: 4.5rem;     /* 72px */
+        --spacing-sm: 1.25rem;           /* 20px */
+        --spacing-md: 2rem;              /* 32px */
+        --spacing-lg: 2.5rem;            /* 40px */
+        --spacing-xl: 4rem;              /* 64px */
       }
       
       .container {
@@ -407,19 +665,131 @@
       .screen {
         padding: var(--spacing-xl);
       }
+      
+      /* Increase form element sizes */
+      .form-input,
+      .form-textarea {
+        padding: var(--spacing-md);
+        font-size: var(--font-size-base);
+      }
+      
+      /* Adjust floating hearts size for tablet */
+      .floating-heart {
+        font-size: 2.5rem;
+      }
+      
+      /* Adjust confetti size for tablet */
+      .confetti {
+        width: 12px;
+        height: 12px;
+      }
     }
     
     /* Desktop styles (1025px+) */
     @media (min-width: 1025px) {
       :root {
-        --font-size-large: 2.25rem;    /* 36px */
-        --font-size-xlarge: 3.5rem;    /* 56px */
-        --font-size-display: 5rem;     /* 80px */
-        --spacing-xl: 5rem;            /* 80px */
+        --font-size-small: 1rem;         /* 16px */
+        --font-size-base: 1.25rem;       /* 20px */
+        --font-size-medium: 1.75rem;     /* 28px */
+        --font-size-large: 2.25rem;      /* 36px */
+        --font-size-xlarge: 3.5rem;      /* 56px */
+        --font-size-display: 5rem;       /* 80px */
+        --spacing-md: 2.5rem;            /* 40px */
+        --spacing-lg: 3rem;              /* 48px */
+        --spacing-xl: 5rem;              /* 80px */
       }
       
       .container {
         max-width: 800px;
+        padding: var(--spacing-lg);
+      }
+      
+      .screen {
+        padding: calc(var(--spacing-xl) + var(--spacing-lg));
+      }
+      
+      /* Increase form element sizes for desktop */
+      .form-input,
+      .form-textarea {
+        padding: var(--spacing-md);
+        font-size: var(--font-size-base);
+      }
+      
+      /* Adjust floating hearts size for desktop */
+      .floating-heart {
+        font-size: 3rem;
+      }
+      
+      /* Adjust confetti size for desktop */
+      .confetti {
+        width: 14px;
+        height: 14px;
+      }
+      
+      /* Add hover effects for desktop (not on touch devices) */
+      @media (hover: hover) {
+        .btn:hover {
+          transform: translateY(-4px);
+        }
+        
+        .form-input:hover,
+        .form-textarea:hover {
+          border-color: var(--color-primary);
+        }
+      }
+    }
+    
+    /* ===================================
+       FLOATING HEARTS ANIMATION
+       =================================== */
+    
+    .floating-heart {
+      position: fixed;
+      font-size: 2rem;
+      pointer-events: none;
+      z-index: 5;
+      animation: float-up 4s ease-in forwards;
+      will-change: transform, opacity;
+    }
+    
+    /* Heart floats upward and fades out */
+    @keyframes float-up {
+      0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 0;
+      }
+    }
+    
+    /* ===================================
+       CONFETTI ANIMATION
+       =================================== */
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 5;
+      animation: confetti-fall 3s ease-in forwards;
+      will-change: transform, opacity;
+    }
+    
+    /* Confetti falls from top with rotation */
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
       }
     }
     
@@ -503,6 +873,30 @@
     <div id="message-container">
       <h1 id="recipient-name"></h1>
       <p id="valentine-message"></p>
+      
+      <!-- Question Section -->
+      <div id="question-section" class="hidden">
+        <h2 class="question-text">Will you be my Valentine?</h2>
+        <div id="button-container">
+          <button id="yes-btn" class="btn btn-yes">Yes! 💕</button>
+          <button id="no-btn" class="btn btn-no">No</button>
+        </div>
+      </div>
+      
+      <!-- Success Message Section -->
+      <div id="success-section" class="hidden">
+        <h2 class="success-message">🎉 Yay! You said Yes! 🎉</h2>
+        <p class="success-text">Share this special moment with them!</p>
+      </div>
+      
+      <!-- Share Options Section -->
+      <div id="share-section" class="hidden">
+        <div class="share-buttons">
+          <button id="copy-link-btn" class="btn btn-share">📋 Copy Link</button>
+          <button id="whatsapp-btn" class="btn btn-share">💬 Share on WhatsApp</button>
+        </div>
+        <div id="copy-confirmation" class="hidden">✓ Link copied to clipboard!</div>
+      </div>
     </div>
   </div>
   
@@ -744,6 +1138,12 @@
       // Get DOM elements
       const nameElement = document.getElementById('recipient-name');
       const messageElement = document.getElementById('valentine-message');
+      const questionSection = document.getElementById('question-section');
+      
+      // Start visual effects immediately when reveal screen is displayed
+      // Effects have lower z-index (5) than message container (10) to not obstruct text
+      createFloatingHearts();
+      createConfetti();
       
       // Display the recipient's name immediately (no typewriter effect for name)
       nameElement.textContent = name;
@@ -762,7 +1162,127 @@
       // Apply typewriter effect to the message
       await typewriterEffect(messageElement, messageToDisplay, 60);
       
-      // TODO: Start visual effects (hearts and confetti) - will be implemented in task 7
+      // Show the question section after typewriter effect completes
+      questionSection.classList.remove('hidden');
+    }
+    
+    /**
+     * Creates floating heart animations on the screen
+     * Generates 20-30 hearts at random positions that float upward and fade out
+     * Hearts are automatically removed after animation completes
+     */
+    function createFloatingHearts() {
+      // Limit to 20-30 hearts for performance
+      const numberOfHearts = 25;
+      
+      // Heart emoji variations for visual variety
+      const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝'];
+      
+      // Create hearts at intervals to avoid all appearing at once
+      let heartsCreated = 0;
+      
+      const heartInterval = setInterval(() => {
+        if (heartsCreated >= numberOfHearts) {
+          clearInterval(heartInterval);
+          return;
+        }
+        
+        // Create a new heart element
+        const heart = document.createElement('div');
+        heart.className = 'floating-heart';
+        
+        // Use a random heart emoji
+        heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+        
+        // Position heart at random horizontal position
+        // Keep hearts within viewport bounds (0% to 95% to account for heart width)
+        const randomX = Math.random() * 95;
+        heart.style.left = `${randomX}%`;
+        
+        // Start hearts from bottom of screen
+        heart.style.bottom = '0';
+        
+        // Add slight random delay to animation for more natural effect
+        const randomDelay = Math.random() * 0.5;
+        heart.style.animationDelay = `${randomDelay}s`;
+        
+        // Add heart to the document
+        document.body.appendChild(heart);
+        
+        // Remove heart element after animation completes (4s + delay)
+        setTimeout(() => {
+          heart.remove();
+        }, (4 + randomDelay) * 1000);
+        
+        heartsCreated++;
+      }, 200); // Create a new heart every 200ms
+    }
+    
+    /**
+     * Creates confetti animation on the screen
+     * Generates confetti particles with random colors that fall from the top
+     * Confetti particles rotate as they fall and are automatically removed after animation completes
+     */
+    function createConfetti() {
+      // Limit to 30 confetti pieces for performance
+      const numberOfConfetti = 30;
+      
+      // Confetti color palette - romantic colors
+      const confettiColors = [
+        '#ff6b9d', // Soft pink
+        '#c44569', // Deep rose
+        '#ffa07a', // Light coral
+        '#ff85a2', // Light pink
+        '#ffb6c1', // Lighter pink
+        '#ff1493', // Deep pink
+        '#ff69b4', // Hot pink
+        '#ffd700', // Gold
+      ];
+      
+      // Create confetti at intervals to avoid all appearing at once
+      let confettiCreated = 0;
+      
+      const confettiInterval = setInterval(() => {
+        if (confettiCreated >= numberOfConfetti) {
+          clearInterval(confettiInterval);
+          return;
+        }
+        
+        // Create a new confetti element
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        
+        // Use a random color from the palette
+        const randomColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        confetti.style.backgroundColor = randomColor;
+        
+        // Position confetti at random horizontal position
+        // Keep confetti within viewport bounds (0% to 100%)
+        const randomX = Math.random() * 100;
+        confetti.style.left = `${randomX}%`;
+        
+        // Start confetti from top of screen
+        confetti.style.top = '-10px';
+        
+        // Add slight random delay to animation for more natural effect
+        const randomDelay = Math.random() * 0.3;
+        confetti.style.animationDelay = `${randomDelay}s`;
+        
+        // Randomize confetti size slightly for variety
+        const randomSize = 8 + Math.random() * 6; // 8-14px
+        confetti.style.width = `${randomSize}px`;
+        confetti.style.height = `${randomSize}px`;
+        
+        // Add confetti to the document
+        document.body.appendChild(confetti);
+        
+        // Remove confetti element after animation completes (3s + delay)
+        setTimeout(() => {
+          confetti.remove();
+        }, (3 + randomDelay) * 1000);
+        
+        confettiCreated++;
+      }, 100); // Create a new confetti piece every 100ms
     }
     
     /**
@@ -771,6 +1291,234 @@
     function handleNameInput() {
       const nameGroup = document.getElementById('name-group');
       nameGroup.classList.remove('error');
+    }
+    
+    /**
+     * Handles Yes button click
+     * Displays success message/animation and shows share options
+     */
+    function handleYesClick() {
+      // Hide the question section (buttons)
+      const questionSection = document.getElementById('question-section');
+      questionSection.classList.add('hidden');
+      
+      // Show success message with animation
+      const successSection = document.getElementById('success-section');
+      successSection.classList.remove('hidden');
+      
+      // Show share options section
+      const shareSection = document.getElementById('share-section');
+      shareSection.classList.remove('hidden');
+      
+      // Generate the share URL for the current Valentine message
+      const shareURL = generateShareURL(recipientName, customMessage);
+      
+      // Store the share URL for use in copy and WhatsApp functions
+      window.currentShareURL = shareURL;
+    }
+    
+    /**
+     * Calculates a random position for the evasive No button
+     * Ensures the button stays within viewport boundaries
+     * @param {number} buttonWidth - The width of the button in pixels
+     * @param {number} buttonHeight - The height of the button in pixels
+     * @param {number} viewportWidth - The width of the viewport in pixels
+     * @param {number} viewportHeight - The height of the viewport in pixels
+     * @returns {Object} - Object with x and y coordinates in pixels
+     */
+    function getRandomPosition(buttonWidth, buttonHeight, viewportWidth, viewportHeight) {
+      // Calculate maximum x and y positions to keep button fully visible
+      // x must be between 0 and (viewportWidth - buttonWidth)
+      // y must be between 0 and (viewportHeight - buttonHeight)
+      const maxX = viewportWidth - buttonWidth;
+      const maxY = viewportHeight - buttonHeight;
+      
+      // Ensure maxX and maxY are not negative (in case button is larger than viewport)
+      const safeMaxX = Math.max(0, maxX);
+      const safeMaxY = Math.max(0, maxY);
+      
+      // Generate random position within safe boundaries
+      const x = Math.random() * safeMaxX;
+      const y = Math.random() * safeMaxY;
+      
+      return { x, y };
+    }
+    
+    /**
+     * Handles No button hover/touch interaction
+     * Moves the button to a new random position on the screen
+     * @param {Event} event - The mouseenter or touchstart event
+     */
+    function handleNoButtonHover(event) {
+      // Prevent default touch behavior to avoid triggering click
+      if (event.type === 'touchstart') {
+        event.preventDefault();
+      }
+      
+      // Get the No button element
+      const noBtn = document.getElementById('no-btn');
+      
+      // Get button dimensions
+      const buttonRect = noBtn.getBoundingClientRect();
+      const buttonWidth = buttonRect.width;
+      const buttonHeight = buttonRect.height;
+      
+      // Get viewport dimensions
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // Calculate new random position
+      const newPosition = getRandomPosition(buttonWidth, buttonHeight, viewportWidth, viewportHeight);
+      
+      // Move button to new position using fixed positioning
+      // First, ensure the button is positioned absolutely or fixed
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = `${newPosition.x}px`;
+      noBtn.style.top = `${newPosition.y}px`;
+    }
+    
+    /**
+     * Copies text to the clipboard using the Clipboard API
+     * Shows confirmation message after successful copy
+     * Implements fallback for browsers without Clipboard API support
+     * @param {string} text - The text to copy to clipboard
+     */
+    async function copyToClipboard(text) {
+      const confirmationElement = document.getElementById('copy-confirmation');
+      
+      try {
+        // Check if Clipboard API is supported
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          // Use modern Clipboard API
+          await navigator.clipboard.writeText(text);
+          
+          // Show confirmation message
+          confirmationElement.classList.remove('hidden');
+          
+          // Hide confirmation message after 2 seconds
+          setTimeout(() => {
+            confirmationElement.classList.add('hidden');
+          }, 2000);
+        } else {
+          // Fallback for browsers without Clipboard API
+          // Create a temporary textarea element
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          
+          // Make textarea invisible but still selectable
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          textarea.style.top = '0';
+          textarea.setAttribute('readonly', '');
+          
+          // Add textarea to document
+          document.body.appendChild(textarea);
+          
+          // Select the text
+          textarea.select();
+          textarea.setSelectionRange(0, text.length);
+          
+          // Try to copy using execCommand (older method)
+          const successful = document.execCommand('copy');
+          
+          // Remove temporary textarea
+          document.body.removeChild(textarea);
+          
+          if (successful) {
+            // Show confirmation message
+            confirmationElement.classList.remove('hidden');
+            
+            // Hide confirmation message after 2 seconds
+            setTimeout(() => {
+              confirmationElement.classList.add('hidden');
+            }, 2000);
+          } else {
+            // If copy failed, show error message
+            confirmationElement.textContent = '❌ Please copy the link manually';
+            confirmationElement.style.color = 'var(--color-error)';
+            confirmationElement.classList.remove('hidden');
+            
+            // Reset message after 3 seconds
+            setTimeout(() => {
+              confirmationElement.classList.add('hidden');
+              confirmationElement.textContent = '✓ Link copied to clipboard!';
+              confirmationElement.style.color = 'var(--color-success)';
+            }, 3000);
+          }
+        }
+      } catch (error) {
+        // Handle any errors (e.g., permission denied)
+        console.error('Failed to copy to clipboard:', error);
+        
+        // Show error message
+        confirmationElement.textContent = '❌ Failed to copy. Please try again.';
+        confirmationElement.style.color = 'var(--color-error)';
+        confirmationElement.classList.remove('hidden');
+        
+        // Reset message after 3 seconds
+        setTimeout(() => {
+          confirmationElement.classList.add('hidden');
+          confirmationElement.textContent = '✓ Link copied to clipboard!';
+          confirmationElement.style.color = 'var(--color-success)';
+        }, 3000);
+      }
+    }
+    
+    /**
+     * Handles Copy Link button click
+     * Copies the share URL to clipboard
+     */
+    function handleCopyLinkClick() {
+      // Get the share URL that was generated when Yes button was clicked
+      const shareURL = window.currentShareURL;
+      
+      if (shareURL) {
+        copyToClipboard(shareURL);
+      }
+    }
+    
+    /**
+     * Opens WhatsApp with the share link pre-filled
+     * Uses web.whatsapp.com for desktop and wa.me for mobile
+     * @param {string} shareURL - The URL to share via WhatsApp
+     */
+    function shareOnWhatsApp(shareURL) {
+      // Create the message text to share
+      const messageText = `💕 I have a special Valentine message for you! ${shareURL}`;
+      
+      // Encode the message for URL
+      const encodedMessage = encodeURIComponent(messageText);
+      
+      // Detect if user is on mobile device
+      // Check for common mobile user agent patterns
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Generate appropriate WhatsApp URL based on device type
+      let whatsappURL;
+      
+      if (isMobile) {
+        // Mobile: Use wa.me URL (works on mobile apps)
+        whatsappURL = `https://wa.me/?text=${encodedMessage}`;
+      } else {
+        // Desktop: Use web.whatsapp.com (opens WhatsApp Web)
+        whatsappURL = `https://web.whatsapp.com/send?text=${encodedMessage}`;
+      }
+      
+      // Open WhatsApp in a new window/tab
+      window.open(whatsappURL, '_blank');
+    }
+    
+    /**
+     * Handles WhatsApp button click
+     * Opens WhatsApp with the share URL
+     */
+    function handleWhatsAppClick() {
+      // Get the share URL that was generated when Yes button was clicked
+      const shareURL = window.currentShareURL;
+      
+      if (shareURL) {
+        shareOnWhatsApp(shareURL);
+      }
     }
     
     // ===================================
@@ -818,6 +1566,25 @@
       // Bind input event to clear error on typing
       const nameInput = document.getElementById('name-input');
       nameInput.addEventListener('input', handleNameInput);
+      
+      // Bind Yes button click event
+      const yesBtn = document.getElementById('yes-btn');
+      yesBtn.addEventListener('click', handleYesClick);
+      
+      // Bind No button evasive behavior
+      // Desktop: mouseenter event (triggers when mouse enters button area)
+      // Mobile: touchstart event (triggers when finger touches button)
+      const noBtn = document.getElementById('no-btn');
+      noBtn.addEventListener('mouseenter', handleNoButtonHover);
+      noBtn.addEventListener('touchstart', handleNoButtonHover);
+      
+      // Bind Copy Link button click event
+      const copyLinkBtn = document.getElementById('copy-link-btn');
+      copyLinkBtn.addEventListener('click', handleCopyLinkClick);
+      
+      // Bind WhatsApp button click event
+      const whatsappBtn = document.getElementById('whatsapp-btn');
+      whatsappBtn.addEventListener('click', handleWhatsAppClick);
     });
   </script>
   
