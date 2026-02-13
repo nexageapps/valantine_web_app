@@ -174,6 +174,7 @@
       outline: none;
       transition: all var(--transition-normal);
       box-shadow: var(--shadow-sm);
+      touch-action: manipulation; /* Optimize touch interactions */
     }
     
     .form-input:focus,
@@ -181,6 +182,8 @@
       border-color: var(--color-primary);
       box-shadow: var(--shadow-md);
       transform: translateY(-2px);
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
     }
     
     .form-input::placeholder,
@@ -228,6 +231,8 @@
       transition: all var(--transition-normal);
       box-shadow: var(--shadow-md);
       min-height: 44px; /* Touch-friendly minimum */
+      touch-action: manipulation; /* Optimize touch interactions, remove double-tap delay */
+      -webkit-tap-highlight-color: rgba(255, 107, 157, 0.3); /* Touch feedback on iOS */
     }
     
     .btn:hover {
@@ -238,6 +243,11 @@
     .btn:active {
       transform: translateY(-1px);
       box-shadow: var(--shadow-sm);
+    }
+    
+    .btn:focus {
+      outline: 3px solid var(--color-primary);
+      outline-offset: 3px;
     }
     
     .btn:disabled {
@@ -424,6 +434,7 @@
       min-width: 100px;
       position: relative;
       transition: all var(--transition-fast);
+      touch-action: manipulation; /* Optimize touch interactions */
     }
     
     .btn-no:hover {
@@ -794,6 +805,53 @@
     }
     
     /* ===================================
+       ACCESSIBILITY - REDUCED MOTION
+       =================================== */
+    
+    /* Respect user's motion preferences for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      /* Disable all animations and transitions */
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      
+      /* Remove transform animations */
+      .btn:hover,
+      .btn:active,
+      .form-input:focus,
+      .form-textarea:focus {
+        transform: none !important;
+      }
+      
+      /* Simplify countdown animation */
+      #countdown-number {
+        animation: none !important;
+      }
+      
+      /* Disable floating hearts and confetti animations */
+      .floating-heart,
+      .confetti {
+        animation: none !important;
+        display: none !important;
+      }
+      
+      /* Simplify success section animation */
+      #success-section {
+        animation: none !important;
+      }
+      
+      /* Simplify copy confirmation animation */
+      #copy-confirmation {
+        animation: none !important;
+      }
+    }
+    
+    /* ===================================
        UTILITY CLASSES
        =================================== */
     
@@ -819,14 +877,14 @@
   <!-- ===================================
        INPUT SCREEN
        =================================== -->
-  <div id="input-screen" class="screen active">
+  <div id="input-screen" class="screen active" role="main" aria-label="Create Valentine message">
     <div class="container">
       <h1>💕 Create Your Valentine 💕</h1>
       <p class="mb-lg" style="color: var(--color-text-light);">
         Send a playful Valentine's Day message to someone special
       </p>
       
-      <form id="valentine-form">
+      <form id="valentine-form" aria-label="Valentine message form">
         <div class="form-group" id="name-group">
           <label for="name-input" class="form-label">Their Name *</label>
           <input 
@@ -836,8 +894,10 @@
             placeholder="Enter their name"
             required
             autocomplete="off"
+            aria-required="true"
+            aria-describedby="name-error"
           >
-          <span class="error-message">Please enter a name</span>
+          <span class="error-message" id="name-error" role="alert">Please enter a name</span>
         </div>
         
         <div class="form-group">
@@ -847,21 +907,22 @@
             class="form-textarea"
             placeholder="Add a personal message... or leave blank for a surprise!"
             autocomplete="off"
+            aria-label="Custom Valentine message"
           ></textarea>
         </div>
         
         <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
-          <button type="button" id="generate-link-btn" class="btn btn-primary" style="flex: 1; min-width: 200px;">
+          <button type="button" id="generate-link-btn" class="btn btn-primary" style="flex: 1; min-width: 200px;" aria-label="Generate shareable link">
             📋 Generate Link
           </button>
-          <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #c44569 0%, #8e2c4a 100%);">
+          <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #c44569 0%, #8e2c4a 100%);" aria-label="Preview Valentine message">
             👀 Preview First
           </button>
         </div>
       </form>
       
       <!-- Link Generation Section -->
-      <div id="link-section" class="hidden" style="margin-top: var(--spacing-lg); padding: var(--spacing-lg); background: var(--color-white); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+      <div id="link-section" class="hidden" style="margin-top: var(--spacing-lg); padding: var(--spacing-lg); background: var(--color-white); border-radius: var(--radius-md); box-shadow: var(--shadow-md);" role="region" aria-label="Generated link section">
         <h3 style="color: var(--color-secondary); margin-bottom: var(--spacing-md);">✨ Your Valentine Link is Ready!</h3>
         <p style="color: var(--color-text-light); margin-bottom: var(--spacing-md); font-size: var(--font-size-small);">
           Share this link with your special someone:
@@ -874,17 +935,18 @@
             class="form-input" 
             style="flex: 1; min-width: 200px; font-size: var(--font-size-small); cursor: pointer;"
             onclick="this.select()"
+            aria-label="Generated Valentine link"
           >
         </div>
         <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
-          <button id="copy-generated-link-btn" class="btn btn-share" style="flex: 1; min-width: 150px;">
+          <button id="copy-generated-link-btn" class="btn btn-share" style="flex: 1; min-width: 150px;" aria-label="Copy link to clipboard">
             📋 Copy Link
           </button>
-          <button id="whatsapp-generated-btn" class="btn btn-share" style="flex: 1; min-width: 150px;">
+          <button id="whatsapp-generated-btn" class="btn btn-share" style="flex: 1; min-width: 150px;" aria-label="Share link on WhatsApp">
             💬 WhatsApp
           </button>
         </div>
-        <div id="copy-generated-confirmation" class="hidden" style="margin-top: var(--spacing-sm); color: var(--color-success); font-weight: 600; text-align: center;">
+        <div id="copy-generated-confirmation" class="hidden" style="margin-top: var(--spacing-sm); color: var(--color-success); font-weight: 600; text-align: center;" role="status" aria-live="polite">
           ✓ Link copied to clipboard!
         </div>
       </div>
@@ -894,42 +956,42 @@
   <!-- ===================================
        COUNTDOWN SCREEN
        =================================== -->
-  <div id="countdown-screen" class="screen">
+  <div id="countdown-screen" class="screen" role="main" aria-label="Countdown animation">
     <div class="container">
-      <div id="countdown-number">3</div>
+      <div id="countdown-number" aria-live="polite" aria-atomic="true">3</div>
     </div>
   </div>
   
   <!-- ===================================
        REVEAL SCREEN
        =================================== -->
-  <div id="reveal-screen" class="screen">
+  <div id="reveal-screen" class="screen" role="main" aria-label="Valentine message reveal">
     <div id="message-container">
-      <h1 id="recipient-name"></h1>
-      <p id="valentine-message"></p>
+      <h1 id="recipient-name" aria-live="polite"></h1>
+      <p id="valentine-message" aria-live="polite" aria-atomic="true"></p>
       
       <!-- Question Section -->
-      <div id="question-section" class="hidden">
+      <div id="question-section" class="hidden" role="region" aria-label="Valentine question">
         <h2 class="question-text">Will you be my Valentine?</h2>
         <div id="button-container">
-          <button id="yes-btn" class="btn btn-yes">Yes! 💕</button>
-          <button id="no-btn" class="btn btn-no">No</button>
+          <button id="yes-btn" class="btn btn-yes" aria-label="Yes, I will be your Valentine">Yes! 💕</button>
+          <button id="no-btn" class="btn btn-no" aria-label="No, I will not be your Valentine">No</button>
         </div>
       </div>
       
       <!-- Success Message Section -->
-      <div id="success-section" class="hidden">
+      <div id="success-section" class="hidden" role="status" aria-live="polite">
         <h2 class="success-message">🎉 Yay! You said Yes! 🎉</h2>
         <p class="success-text">Share this special moment with them!</p>
       </div>
       
       <!-- Share Options Section -->
-      <div id="share-section" class="hidden">
+      <div id="share-section" class="hidden" role="region" aria-label="Share options">
         <div class="share-buttons">
-          <button id="copy-link-btn" class="btn btn-share">📋 Copy Link</button>
-          <button id="whatsapp-btn" class="btn btn-share">💬 Share on WhatsApp</button>
+          <button id="copy-link-btn" class="btn btn-share" aria-label="Copy Valentine link to clipboard">📋 Copy Link</button>
+          <button id="whatsapp-btn" class="btn btn-share" aria-label="Share Valentine link on WhatsApp">💬 Share on WhatsApp</button>
         </div>
-        <div id="copy-confirmation" class="hidden">✓ Link copied to clipboard!</div>
+        <div id="copy-confirmation" class="hidden" role="status" aria-live="polite">✓ Link copied to clipboard!</div>
       </div>
     </div>
   </div>
@@ -1435,6 +1497,8 @@
       // Prevent default touch behavior to avoid triggering click
       if (event.type === 'touchstart') {
         event.preventDefault();
+        // Also stop event propagation to prevent any parent handlers
+        event.stopPropagation();
       }
       
       // Get the No button element
@@ -1457,6 +1521,19 @@
       noBtn.style.position = 'fixed';
       noBtn.style.left = `${newPosition.x}px`;
       noBtn.style.top = `${newPosition.y}px`;
+      
+      // Add a subtle animation for smoother movement
+      noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
+    }
+    
+    /**
+     * Handles No button focus (keyboard navigation)
+     * Moves the button when it receives keyboard focus
+     * @param {Event} event - The focus event
+     */
+    function handleNoButtonFocus(event) {
+      // Move the button when it receives focus via keyboard
+      handleNoButtonHover(event);
     }
     
     /**
@@ -1675,9 +1752,12 @@
       // Bind No button evasive behavior
       // Desktop: mouseenter event (triggers when mouse enters button area)
       // Mobile: touchstart event (triggers when finger touches button)
+      // Keyboard: focus event (triggers when button receives keyboard focus)
       const noBtn = document.getElementById('no-btn');
       noBtn.addEventListener('mouseenter', handleNoButtonHover);
-      noBtn.addEventListener('touchstart', handleNoButtonHover);
+      // Note: touchstart must NOT be passive because we call preventDefault
+      noBtn.addEventListener('touchstart', handleNoButtonHover, { passive: false });
+      noBtn.addEventListener('focus', handleNoButtonFocus);
       
       // Bind Copy Link button click event (in reveal screen)
       const copyLinkBtn = document.getElementById('copy-link-btn');
