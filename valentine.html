@@ -1080,6 +1080,13 @@
      * @returns {string} - The complete shareable URL with query parameters
      */
     function generateShareURL(name, message) {
+      // Sanitize inputs to prevent XSS and limit length
+      const MAX_NAME_LENGTH = 200;
+      const MAX_MESSAGE_LENGTH = 500;
+      
+      const sanitizedName = sanitizeInput(name, MAX_NAME_LENGTH);
+      const sanitizedMessage = sanitizeInput(message, MAX_MESSAGE_LENGTH);
+      
       // Get the current page URL (base URL without query parameters or hash)
       // Split by '?' to remove any existing query parameters
       // Split by '#' to remove any hash fragments
@@ -1087,11 +1094,11 @@
       
       // Use URLSearchParams API for proper encoding of special characters
       const params = new URLSearchParams();
-      params.set('name', name);
+      params.set('name', sanitizedName);
       
       // Only add message parameter if it's not empty
-      if (message && message.trim().length > 0) {
-        params.set('msg', message);
+      if (sanitizedMessage && sanitizedMessage.length > 0) {
+        params.set('msg', sanitizedMessage);
       }
       
       // Construct and return the full URL with query parameters
