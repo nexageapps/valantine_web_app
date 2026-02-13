@@ -1959,14 +1959,22 @@
       // Include a romantic emoji and clear call-to-action
       const messageText = `💕 I have a special Valentine message for you! ${shareURL}`;
       
+      // Log for debugging
+      console.log('WhatsApp Share - Original URL:', shareURL);
+      console.log('WhatsApp Share - Message Text:', messageText);
+      
       // Encode the message for URL
       // encodeURIComponent handles spaces, emojis, and special characters
       const encodedMessage = encodeURIComponent(messageText);
+      
+      console.log('WhatsApp Share - Encoded Message:', encodedMessage);
       
       // Detect if user is on mobile device
       // Check for common mobile user agent patterns
       // This determines which WhatsApp URL format to use
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      console.log('WhatsApp Share - Is Mobile:', isMobile);
       
       // Generate appropriate WhatsApp URL based on device type
       let whatsappURL;
@@ -1980,6 +1988,8 @@
         // This opens WhatsApp Web in the browser on desktop
         whatsappURL = `https://web.whatsapp.com/send?text=${encodedMessage}`;
       }
+      
+      console.log('WhatsApp Share - Final WhatsApp URL:', whatsappURL);
       
       // Open WhatsApp in a new window/tab
       // _blank ensures it doesn't navigate away from the Valentine app
