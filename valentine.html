@@ -1075,12 +1075,14 @@
     
     /**
      * Generates a shareable URL with encoded query parameters
+     * This creates the magic link that can be shared to send a personalized Valentine
      * @param {string} name - The recipient's name
      * @param {string} message - The custom message (can be empty)
      * @returns {string} - The complete shareable URL with query parameters
      */
     function generateShareURL(name, message) {
       // Sanitize inputs to prevent XSS and limit length
+      // This is critical for security - prevents malicious code injection
       const MAX_NAME_LENGTH = 200;
       const MAX_MESSAGE_LENGTH = 500;
       
@@ -1090,18 +1092,22 @@
       // Get the current page URL (base URL without query parameters or hash)
       // Split by '?' to remove any existing query parameters
       // Split by '#' to remove any hash fragments
+      // This ensures we always start with a clean URL
       const currentURL = window.location.href.split('?')[0].split('#')[0];
       
       // Use URLSearchParams API for proper encoding of special characters
+      // This handles spaces, emojis, and special characters correctly
       const params = new URLSearchParams();
       params.set('name', sanitizedName);
       
       // Only add message parameter if it's not empty
+      // This keeps URLs shorter when no custom message is provided
       if (sanitizedMessage && sanitizedMessage.length > 0) {
         params.set('msg', sanitizedMessage);
       }
       
       // Construct and return the full URL with query parameters
+      // Example: https://example.com/valentine.html?name=John&msg=You%20are%20amazing
       return `${currentURL}?${params.toString()}`;
     }
     
@@ -1248,7 +1254,7 @@
       const countdownElement = document.getElementById('countdown-number');
       const countdownScreen = document.getElementById('countdown-screen');
       
-      // Disable user interaction during countdown
+      // Disable user interaction during countdown to prevent accidental clicks
       countdownScreen.style.pointerEvents = 'none';
       
       // Countdown sequence: 3, 2, 1
@@ -1258,14 +1264,22 @@
       countdownElement.textContent = currentNumber;
       
       // Use setTimeout to display each number for ~1 second
+      // This creates a dramatic countdown effect before the reveal
+      
       // Display "2" after 1 second
       setTimeout(() => {
         currentNumber = 2;
         countdownElement.textContent = currentNumber;
+        
         // Re-trigger animation by removing and re-adding the element
+        // This is necessary because CSS animations don't restart automatically
         countdownElement.style.animation = 'none';
+        
         // Force reflow to restart animation
+        // Reading offsetWidth forces the browser to recalculate layout
         void countdownElement.offsetWidth;
+        
+        // Re-apply animation for the new number
         countdownElement.style.animation = 'countdown-pulse 1s ease-in-out';
       }, 1000);
       
@@ -1273,13 +1287,15 @@
       setTimeout(() => {
         currentNumber = 1;
         countdownElement.textContent = currentNumber;
-        // Re-trigger animation
+        
+        // Re-trigger animation for final number
         countdownElement.style.animation = 'none';
         void countdownElement.offsetWidth;
         countdownElement.style.animation = 'countdown-pulse 1s ease-in-out';
       }, 2000);
       
       // Transition to reveal screen after 3 seconds (when countdown completes)
+      // Total countdown duration: 3 seconds (1s per number)
       setTimeout(() => {
         transitionToReveal();
       }, 3000);
@@ -1287,6 +1303,7 @@
     
     /**
      * Reveals text character by character with a typewriter effect
+     * Creates a dramatic reveal by displaying one character at a time
      * @param {HTMLElement} element - The DOM element to display the text in
      * @param {string} text - The text to reveal character by character
      * @param {number} speed - The delay in milliseconds between each character (default: 60ms)
@@ -1294,26 +1311,31 @@
      */
     function typewriterEffect(element, text, speed = 60) {
       return new Promise((resolve) => {
-        // Clear any existing content in the element
+        // Clear any existing content in the element before starting
         element.textContent = '';
         
-        // Track the current character index
+        // Track the current character index (which character we're revealing)
         let charIndex = 0;
         
         /**
          * Reveals the next character in the sequence
+         * This function calls itself recursively using setTimeout
+         * to create the typewriter effect
          */
         function revealNextChar() {
           // Check if we've revealed all characters
           if (charIndex < text.length) {
             // Add the next character to the element
+            // Using textContent prevents XSS attacks (no HTML interpretation)
             element.textContent += text.charAt(charIndex);
             charIndex++;
             
-            // Schedule the next character reveal
+            // Schedule the next character reveal after the specified delay
+            // This creates the typewriter effect by revealing one character at a time
             setTimeout(revealNextChar, speed);
           } else {
             // All characters revealed - resolve the promise
+            // This allows the caller to know when the effect is complete
             resolve();
           }
         }
@@ -1345,59 +1367,69 @@
     
     /**
      * Displays the personalized Valentine message with typewriter effect
+     * This is the main reveal function that orchestrates the romantic message display
      * @param {string} name - The recipient's name
      * @param {string} customMsg - The custom message (can be empty)
      */
     async function showReveal(name, customMsg) {
-      // Get DOM elements
+      // Get DOM elements for the reveal screen
       const nameElement = document.getElementById('recipient-name');
       const messageElement = document.getElementById('valentine-message');
       const questionSection = document.getElementById('question-section');
       
       // Start visual effects immediately when reveal screen is displayed
       // Effects have lower z-index (5) than message container (10) to not obstruct text
+      // This creates a festive, romantic atmosphere
       createFloatingHearts();
       createConfetti();
       
       // Display the recipient's name immediately (no typewriter effect for name)
+      // The name appears instantly for immediate personalization
       // Use textContent to prevent XSS attacks (not innerHTML)
       nameElement.textContent = name;
       
-      // Determine which message to display
+      // Determine which message to display based on whether custom message was provided
       let messageToDisplay;
       
       if (customMsg && customMsg.length > 0) {
-        // Use custom message if provided
+        // Use custom message if provided by the sender
         messageToDisplay = customMsg;
       } else {
         // Use default romantic message if no custom message
+        // This ensures there's always a meaningful message even if sender didn't customize
         messageToDisplay = "You make my heart skip a beat! 💕 Every moment with you is special, and I can't imagine my life without you. Will you be my Valentine?";
       }
       
-      // Apply typewriter effect to the message
+      // Apply typewriter effect to the message for dramatic reveal
       // typewriterEffect uses textContent internally for XSS prevention
+      // await ensures we wait for the typewriter effect to complete before showing buttons
       await typewriterEffect(messageElement, messageToDisplay, 60);
       
       // Show the question section after typewriter effect completes
+      // This creates a natural flow: name → message → question
       questionSection.classList.remove('hidden');
     }
     
     /**
      * Creates floating heart animations on the screen
      * Generates 20-30 hearts at random positions that float upward and fade out
-     * Hearts are automatically removed after animation completes
+     * Hearts are automatically removed after animation completes to prevent memory leaks
      */
     function createFloatingHearts() {
-      // Limit to 20-30 hearts for performance
+      // Limit to 25 hearts for performance
+      // Too many hearts can slow down the animation on mobile devices
       const numberOfHearts = 25;
       
       // Heart emoji variations for visual variety
+      // Using different heart emojis makes the animation more interesting
       const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝'];
       
       // Create hearts at intervals to avoid all appearing at once
+      // Staggered creation looks more natural than all hearts appearing simultaneously
       let heartsCreated = 0;
       
       const heartInterval = setInterval(() => {
+        // Stop creating hearts once we reach the target number
         if (heartsCreated >= numberOfHearts) {
           clearInterval(heartInterval);
           return;
@@ -1407,31 +1439,35 @@
         const heart = document.createElement('div');
         heart.className = 'floating-heart';
         
-        // Use a random heart emoji
+        // Use a random heart emoji from the array
         heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
         
         // Position heart at random horizontal position
         // Keep hearts within viewport bounds (0% to 95% to account for heart width)
+        // This prevents hearts from being cut off at the right edge
         const randomX = Math.random() * 95;
         heart.style.left = `${randomX}%`;
         
         // Start hearts from bottom of screen
+        // They will float upward via CSS animation
         heart.style.bottom = '0';
         
         // Add slight random delay to animation for more natural effect
+        // This creates a more organic, flowing appearance
         const randomDelay = Math.random() * 0.5;
         heart.style.animationDelay = `${randomDelay}s`;
         
-        // Add heart to the document
+        // Add heart to the document body
         document.body.appendChild(heart);
         
         // Remove heart element after animation completes (4s + delay)
+        // This is important for memory management - prevents DOM bloat
         setTimeout(() => {
           heart.remove();
         }, (4 + randomDelay) * 1000);
         
         heartsCreated++;
-      }, 200); // Create a new heart every 200ms
+      }, 200); // Create a new heart every 200ms for smooth, continuous effect
     }
     
     /**
@@ -1441,9 +1477,11 @@
      */
     function createConfetti() {
       // Limit to 30 confetti pieces for performance
+      // Balance between visual impact and smooth animation
       const numberOfConfetti = 30;
       
-      // Confetti color palette - romantic colors
+      // Confetti color palette - romantic colors that match the app theme
+      // Using a variety of pinks, roses, and gold for a festive look
       const confettiColors = [
         '#ff6b9d', // Soft pink
         '#c44569', // Deep rose
@@ -1456,15 +1494,17 @@
       ];
       
       // Create confetti at intervals to avoid all appearing at once
+      // Staggered creation creates a more realistic confetti effect
       let confettiCreated = 0;
       
       const confettiInterval = setInterval(() => {
+        // Stop creating confetti once we reach the target number
         if (confettiCreated >= numberOfConfetti) {
           clearInterval(confettiInterval);
           return;
         }
         
-        // Create a new confetti element
+        // Create a new confetti element (small colored square)
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
         
@@ -1477,28 +1517,32 @@
         const randomX = Math.random() * 100;
         confetti.style.left = `${randomX}%`;
         
-        // Start confetti from top of screen
+        // Start confetti from top of screen (slightly above viewport)
+        // -10px ensures confetti starts off-screen for smooth entrance
         confetti.style.top = '-10px';
         
         // Add slight random delay to animation for more natural effect
+        // This creates a more organic, cascading appearance
         const randomDelay = Math.random() * 0.3;
         confetti.style.animationDelay = `${randomDelay}s`;
         
         // Randomize confetti size slightly for variety
-        const randomSize = 8 + Math.random() * 6; // 8-14px
+        // Range: 8-14px creates visual depth and interest
+        const randomSize = 8 + Math.random() * 6;
         confetti.style.width = `${randomSize}px`;
         confetti.style.height = `${randomSize}px`;
         
-        // Add confetti to the document
+        // Add confetti to the document body
         document.body.appendChild(confetti);
         
         // Remove confetti element after animation completes (3s + delay)
+        // Important for memory management - prevents DOM bloat
         setTimeout(() => {
           confetti.remove();
         }, (3 + randomDelay) * 1000);
         
         confettiCreated++;
-      }, 100); // Create a new confetti piece every 100ms
+      }, 100); // Create a new confetti piece every 100ms for continuous effect
     }
     
     /**
@@ -1536,6 +1580,7 @@
     /**
      * Calculates a random position for the evasive No button
      * Ensures the button stays within viewport boundaries
+     * This is the core logic for the playful "No" button that moves away from the user
      * @param {number} buttonWidth - The width of the button in pixels
      * @param {number} buttonHeight - The height of the button in pixels
      * @param {number} viewportWidth - The width of the viewport in pixels
@@ -1544,16 +1589,20 @@
      */
     function getRandomPosition(buttonWidth, buttonHeight, viewportWidth, viewportHeight) {
       // Calculate maximum x and y positions to keep button fully visible
+      // The button must fit entirely within the viewport
       // x must be between 0 and (viewportWidth - buttonWidth)
       // y must be between 0 and (viewportHeight - buttonHeight)
       const maxX = viewportWidth - buttonWidth;
       const maxY = viewportHeight - buttonHeight;
       
       // Ensure maxX and maxY are not negative (in case button is larger than viewport)
+      // This prevents the button from going off-screen on very small devices
       const safeMaxX = Math.max(0, maxX);
       const safeMaxY = Math.max(0, maxY);
       
       // Generate random position within safe boundaries
+      // Math.random() returns a value between 0 and 1
+      // Multiplying by safeMaxX/safeMaxY gives us a random position within bounds
       const x = Math.random() * safeMaxX;
       const y = Math.random() * safeMaxY;
       
@@ -1563,10 +1612,12 @@
     /**
      * Handles No button hover/touch interaction
      * Moves the button to a new random position on the screen
+     * This creates the playful evasive behavior that makes the "No" button hard to click
      * @param {Event} event - The mouseenter or touchstart event
      */
     function handleNoButtonHover(event) {
       // Prevent default touch behavior to avoid triggering click
+      // On touch devices, we need to prevent the default action to stop the button from being clicked
       if (event.type === 'touchstart') {
         event.preventDefault();
         // Also stop event propagation to prevent any parent handlers
@@ -1576,25 +1627,29 @@
       // Get the No button element
       const noBtn = document.getElementById('no-btn');
       
-      // Get button dimensions
+      // Get button dimensions using getBoundingClientRect
+      // This gives us the actual rendered size of the button
       const buttonRect = noBtn.getBoundingClientRect();
       const buttonWidth = buttonRect.width;
       const buttonHeight = buttonRect.height;
       
       // Get viewport dimensions
+      // window.innerWidth/innerHeight gives us the visible viewport size
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       
-      // Calculate new random position
+      // Calculate new random position that keeps button within viewport
       const newPosition = getRandomPosition(buttonWidth, buttonHeight, viewportWidth, viewportHeight);
       
       // Move button to new position using fixed positioning
-      // First, ensure the button is positioned absolutely or fixed
+      // Fixed positioning allows the button to move anywhere on the screen
+      // regardless of its parent container
       noBtn.style.position = 'fixed';
       noBtn.style.left = `${newPosition.x}px`;
       noBtn.style.top = `${newPosition.y}px`;
       
       // Add a subtle animation for smoother movement
+      // This makes the button "slide" to its new position rather than jumping instantly
       noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
     }
     
@@ -1636,17 +1691,18 @@
     /**
      * Copies text to the clipboard and shows confirmation in specified element
      * Handles Clipboard API not supported with manual copy fallback
+     * This function provides a robust copy experience across all browsers
      * @param {string} text - The text to copy to clipboard
      * @param {HTMLElement} confirmationElement - The element to show confirmation in
      */
     async function copyToClipboardWithConfirmation(text, confirmationElement) {
       try {
-        // Check if Clipboard API is supported
+        // Check if Clipboard API is supported (modern browsers)
         if (isClipboardSupported()) {
-          // Use modern Clipboard API
+          // Use modern Clipboard API - the preferred method
           await navigator.clipboard.writeText(text);
           
-          // Show confirmation message
+          // Show success confirmation message
           confirmationElement.textContent = '✓ Link copied to clipboard!';
           confirmationElement.style.color = 'var(--color-success)';
           confirmationElement.classList.remove('hidden');
@@ -1656,26 +1712,33 @@
             confirmationElement.classList.add('hidden');
           }, 2000);
         } else {
-          // Fallback for browsers without Clipboard API
+          // Fallback for browsers without Clipboard API (older browsers)
           // Try using deprecated execCommand as fallback
+          
+          // Create a temporary textarea element to hold the text
           const textarea = document.createElement('textarea');
           textarea.value = text;
+          
+          // Position it off-screen so it's not visible to the user
           textarea.style.position = 'fixed';
           textarea.style.left = '-9999px';
           textarea.style.top = '0';
-          textarea.setAttribute('readonly', '');
+          textarea.setAttribute('readonly', ''); // Prevent keyboard from showing on mobile
           
+          // Add textarea to DOM, select its content, and copy
           document.body.appendChild(textarea);
           textarea.select();
-          textarea.setSelectionRange(0, text.length);
+          textarea.setSelectionRange(0, text.length); // For mobile devices
           
           let successful = false;
           try {
+            // Attempt to copy using the deprecated execCommand
             successful = document.execCommand('copy');
           } catch (err) {
             console.error('execCommand copy failed:', err);
           }
           
+          // Clean up - remove the temporary textarea
           document.body.removeChild(textarea);
           
           if (successful) {
@@ -1701,13 +1764,14 @@
               linkInput.select();
             }
             
-            // Keep message visible longer for manual copy
+            // Keep message visible longer for manual copy (5 seconds)
             setTimeout(() => {
               confirmationElement.classList.add('hidden');
             }, 5000);
           }
         }
       } catch (error) {
+        // Handle any unexpected errors
         console.error('Failed to copy to clipboard:', error);
         
         // Show error message with manual copy instruction
@@ -1757,17 +1821,21 @@
     /**
      * Opens WhatsApp with the share link pre-filled
      * Uses web.whatsapp.com for desktop and wa.me for mobile
+     * This makes it easy to share the Valentine message via WhatsApp
      * @param {string} shareURL - The URL to share via WhatsApp
      */
     function shareOnWhatsApp(shareURL) {
       // Create the message text to share
+      // Include a romantic emoji and clear call-to-action
       const messageText = `💕 I have a special Valentine message for you! ${shareURL}`;
       
       // Encode the message for URL
+      // encodeURIComponent handles spaces, emojis, and special characters
       const encodedMessage = encodeURIComponent(messageText);
       
       // Detect if user is on mobile device
       // Check for common mobile user agent patterns
+      // This determines which WhatsApp URL format to use
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
       // Generate appropriate WhatsApp URL based on device type
@@ -1775,13 +1843,16 @@
       
       if (isMobile) {
         // Mobile: Use wa.me URL (works on mobile apps)
+        // This opens the WhatsApp app directly on mobile devices
         whatsappURL = `https://wa.me/?text=${encodedMessage}`;
       } else {
         // Desktop: Use web.whatsapp.com (opens WhatsApp Web)
+        // This opens WhatsApp Web in the browser on desktop
         whatsappURL = `https://web.whatsapp.com/send?text=${encodedMessage}`;
       }
       
       // Open WhatsApp in a new window/tab
+      // _blank ensures it doesn't navigate away from the Valentine app
       window.open(whatsappURL, '_blank');
     }
     
@@ -1805,14 +1876,17 @@
     /**
      * Initializes the app on page load
      * Checks for URL parameters and determines which screen to show
+     * This is the entry point that makes shareable links work
      */
     function initializeApp() {
-      // Parse URL parameters
+      // Parse URL parameters from the current page URL
       const urlParams = parseURLParams();
       
       // Check if valid parameters exist (name must be non-empty)
+      // This determines if someone opened a shared link or is creating a new Valentine
       if (urlParams.name && validateNameInput(urlParams.name)) {
-        // Valid parameters found - skip input form and go to countdown
+        // Valid parameters found - this is a shared link!
+        // Skip input form and go directly to countdown for immediate reveal
         recipientName = urlParams.name.trim();
         customMessage = urlParams.message.trim();
         
@@ -1823,64 +1897,75 @@
         const countdownScreen = document.getElementById('countdown-screen');
         countdownScreen.classList.add('active');
         
-        // Start countdown animation
+        // Start countdown animation immediately
+        // This creates the dramatic reveal experience for the recipient
         startCountdown();
       } else {
         // No valid parameters - show input form (default state)
+        // This is someone creating a new Valentine message
         // Input screen is already active by default in HTML
         // No action needed here
       }
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize the app (check URL parameters)
+      // Initialize the app (check URL parameters and determine starting screen)
       initializeApp();
       
-      // Bind form submit event
+      // ===================================
+      // BIND EVENT LISTENERS
+      // ===================================
+      
+      // Form submit event - handles "Preview First" button
       const form = document.getElementById('valentine-form');
       form.addEventListener('submit', handleFormSubmit);
       
-      // Bind Generate Link button click event
+      // Generate Link button - creates shareable link without preview
       const generateLinkBtn = document.getElementById('generate-link-btn');
       generateLinkBtn.addEventListener('click', handleGenerateLinkClick);
       
-      // Bind input event to clear error on typing
+      // Name input event - clears error state when user starts typing
       const nameInput = document.getElementById('name-input');
       nameInput.addEventListener('input', handleNameInput);
       
-      // Bind Yes button click event
+      // Yes button - shows success message and share options
       const yesBtn = document.getElementById('yes-btn');
       yesBtn.addEventListener('click', handleYesClick);
       
-      // Bind No button evasive behavior
+      // No button evasive behavior - the playful button that moves away
       // Desktop: mouseenter event (triggers when mouse enters button area)
       // Mobile: touchstart event (triggers when finger touches button)
       // Keyboard: focus event (triggers when button receives keyboard focus)
       const noBtn = document.getElementById('no-btn');
+      
+      // Desktop hover behavior
       noBtn.addEventListener('mouseenter', handleNoButtonHover);
       
+      // Mobile touch behavior
       // Only add touch event listener if touch is supported
       // This provides graceful fallback for devices without touch support
       if (isTouchSupported()) {
         // Note: touchstart must NOT be passive because we call preventDefault
+        // This prevents the default touch behavior and stops the button from being clicked
         noBtn.addEventListener('touchstart', handleNoButtonHover, { passive: false });
       }
       
+      // Keyboard navigation behavior (accessibility)
       noBtn.addEventListener('focus', handleNoButtonFocus);
       
-      // Bind Copy Link button click event (in reveal screen)
+      // Copy Link button (in reveal screen after clicking Yes)
       const copyLinkBtn = document.getElementById('copy-link-btn');
       copyLinkBtn.addEventListener('click', handleCopyLinkClick);
       
-      // Bind WhatsApp button click event (in reveal screen)
+      // WhatsApp button (in reveal screen after clicking Yes)
       const whatsappBtn = document.getElementById('whatsapp-btn');
       whatsappBtn.addEventListener('click', handleWhatsAppClick);
       
-      // Bind Copy Generated Link button click event (in input screen)
+      // Copy Generated Link button (in input screen after generating link)
       const copyGeneratedLinkBtn = document.getElementById('copy-generated-link-btn');
       copyGeneratedLinkBtn.addEventListener('click', handleCopyGeneratedLinkClick);
       
-      // Bind WhatsApp Generated button click event (in input screen)
+      // WhatsApp Generated button (in input screen after generating link)
       const whatsappGeneratedBtn = document.getElementById('whatsapp-generated-btn');
       whatsappGeneratedBtn.addEventListener('click', handleWhatsAppGeneratedClick);
     });
